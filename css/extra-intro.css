@@ -1,0 +1,93 @@
+.col-va {
+  height: 100px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-justify-content: space-around;
+      -ms-flex-pack: distribute;
+          justify-content: space-around;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.col-va-s {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-justify-content: space-around;
+      -ms-flex-pack: distribute;
+          justify-content: space-around;
+}
+
+.row-b {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.extra-intro {
+  padding-left: 20px;
+  padding-right: 20px;
+  line-height: 1.7;
+  font-size: 13px;
+  padding-bottom: 40px;
+}
+
+.extra-intro p {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.extra-intro .row-b a {
+  color: #000 !important;
+  text-decoration: none !important;
+  margin-bottom: 20px;
+  width: 45%;
+}
+
+.extra-intro img {
+  display: block;
+  margin-bottom: 6px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: auto;
+}
+
+.extra-intro .row-b {
+  text-align: center;
+}
+
+.pmb {
+  margin-bottom: 30px !important;
+}
+
+.notify {
+  padding-top: 43px;
+  background: url(../img/slide-intro-deco@2x.png) no-repeat 50% 0;
+  -webkit-background-size: 28px 26px;
+          background-size: 28px 26px;
+  text-align: center;
+  margin-top: 60px;
+  margin-bottom: 80px;
+}
+/*# sourceMappingURL=extra-intro.css.map */
