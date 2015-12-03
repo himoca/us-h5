@@ -569,7 +569,7 @@ function getGallery() {
         // 延迟图片加载
         $("img").lazyload({
           threshold: 0,
-          failure_limit : 4,
+          failure_limit : 9999,
           effect: "fadeIn",
           placeholder: 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw=='
         });
