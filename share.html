@@ -92,7 +92,11 @@
         <div class="photo-item" data-description="<%= currentPicture.content %>" data-author="<%= currentPicture.nickname %>" data-avatar="<%= pictureBaseUrl + avatarDirAndName + '_60x60' + '.' + avatarExt %>" data-shoot-time="<%= currentPicture.shoot_time %>" data-x="<%= photoItem.x %>" data-y="<%= photoItem.y %>" data-width="<%= photoItem.width %>" data-height="<%= photoItem.height %>" style="left:<%= photoItem.x/width*100 + '%' %>;top:<%= (photoItem.y - headerHeight)/(currentPhotoGroup.height - headerHeight)*100 + '%' %>;width:<%= photoItem.width/width*100 + '%' %>;">
           <div class="photo-item-inner">
             <a class="photo-item-wrapper" href="<%= pictureBaseUrl + photoFileDirAndName + (galleryConfig.filterType > 0 ?  ('_' + galleryConfig.filterType) : '') + '.' + photoFileExt %>" data-size="<%= currentPicture.size %>" style="padding-bottom:<%= photoItem.height/photoItem.width*100 + '%' %>;">
+<<<<<<< HEAD
               <img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + (photoItem.filter > -1 ?  ('_' + photoItem.filter) : '') + '_50q.' + photoFileExt %>" alt="">
+=======
+              <img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + '_' + photoItem.filter + '_50q.' + photoFileExt %>" alt="">
+>>>>>>> 54dfe493dd8605ab0a76ca2f5ef08daf7690b98d
             </a>
           </div>
         </div>
