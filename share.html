@@ -29,7 +29,7 @@
 
   <script src="bower_components/moment/min/moment.min.js"></script>
 
-  <script src="js/gallery-layout-2015120201.js"></script>
+  <script src="js/gallery-layout.js?2015120403"></script>
 
   <script type="text/template" id="template-main">
     <% var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/' %>
@@ -92,7 +92,7 @@
         <div class="photo-item" data-description="<%= currentPicture.content %>" data-author="<%= currentPicture.nickname %>" data-avatar="<%= pictureBaseUrl + avatarDirAndName + '_60x60' + '.' + avatarExt %>" data-shoot-time="<%= currentPicture.shoot_time %>" data-x="<%= photoItem.x %>" data-y="<%= photoItem.y %>" data-width="<%= photoItem.width %>" data-height="<%= photoItem.height %>" style="left:<%= photoItem.x/width*100 + '%' %>;top:<%= (photoItem.y - headerHeight)/(currentPhotoGroup.height - headerHeight)*100 + '%' %>;width:<%= photoItem.width/width*100 + '%' %>;">
           <div class="photo-item-inner">
             <a class="photo-item-wrapper" href="<%= pictureBaseUrl + photoFileDirAndName + (galleryConfig.filterType > 0 ?  ('_' + galleryConfig.filterType) : '') + '.' + photoFileExt %>" data-size="<%= currentPicture.size %>" style="padding-bottom:<%= photoItem.height/photoItem.width*100 + '%' %>;">
-              <img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + '_' + photoItem.filter + '.' + photoFileExt %>" alt="">
+              <img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + (photoItem.filter > -1 ?  ('_' + photoItem.filter) : '') + '_50q.' + photoFileExt %>" alt="">
             </a>
           </div>
         </div>

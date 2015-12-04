@@ -36,7 +36,7 @@ var galleryConfig = {
   headerHeight: 93,
   footerWidthDescriptionHeight: 135,
   footerWidthoutDexcriptionHeight: 75,
-  filterType: 1 // -1是原图  0是1977  1是lomoFi  2是Hefe  3是Inkwell
+  filterType: -1 // -1是原图  0是1977  1是lomoFi  2是Hefe  3是Inkwell
 }
 
 var galleryData = {
@@ -58,6 +58,7 @@ var galleryData = {
 var downloadLink = {
   ios: 'https://itunes.apple.com/cn/app/us/id1041870519',
   android: 'http://us.himoca.com/apk/moca_us.apk',
+  microdownload: 'http://a.app.qq.com/o/simple.jsp?pkgname=com.hoolai.us&g_f=991653',
   yyb: '' // 应用宝
 }
 
@@ -168,6 +169,7 @@ function createMoment() {
     data: {
       event_id: galleryData.eventId,
       login_uid: galleryData.uid,
+      platform: 2
       // session_key: galleryData.sessionKey
     },
     success: function (d) {
@@ -192,7 +194,7 @@ function uploadFile() {
     // limitConcurrentUploads: true,
     // multipart: ,
     autoUpload: enableDesktopDebug ? false : true,
-    disableImageResize: /Android(?!.*Chrome)|Opera/.test(window.navigator && navigator.userAgent),
+    disableImageResize: /Android(?!.*Chrome)|Opera/.test(window.navigator && navigator.userAgent),  //是否可用调整图片大小
     // imageMaxWidth: 1080,
     // imageMaxHeight: 1080,
     imageOrientation: true, // 采用exif中的方向
@@ -224,9 +226,7 @@ function uploadFile() {
         console.log(img);
 
 
-      },
-      options
-    );
+      }, options);
 
     loadImage.parseMetaData(
       data.files[0],
@@ -272,11 +272,14 @@ function uploadFile() {
     var progress = parseInt(data.loaded / data.total * 100, 10);
     $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
   }).on('fileuploaddone', function (e, data) {
+    //pokola 检查c端口，如果报403，则取消commit，提示已锁定，如果正常，则执行commit
+
     console.log('上传done', data);
     // alert('上传完成')
-    pictureIndex++;
+    pictureIndex++;   //pokola
     // $('.toolbar-bottom .file-uploaded').html(pictureIndex);
     pictureIdArray.push(data.result.p.picture_id);
+
     console.log('picture_ids为' + data.result.p.picture_id, 'moment_id为' + galleryData.momentId, 'event_id' + galleryData.eventId);
 
     if(pictureIndex === data.originalFiles.length) {
@@ -296,7 +299,8 @@ function commitUpload(picture_ids) {
       moment_id: galleryData.momentId,
       event_id: galleryData.eventId,
       login_uid: galleryData.uid,
-      picture_ids: picture_ids
+      picture_ids: picture_ids,
+      platform: 2
     },
     success: function (d) {
       // alert('完成后返回')
@@ -314,13 +318,15 @@ function getJsSdkData() {
     url: urlProtocol + urlConfig.init_domain + '/Us/User/getJSSDK',
     dataType: 'json',
     data: {
-      url: location.href
+      url: location.href,
+      platform: 2
     },
     success: function (d) {
       if (enableAlertDebug) {
         alert(JSON.stringify(d))
       }
 
+      //pokola
       var coverImgExt = galleryData.cover.match(/(.*)\.(.*$)/)[2], coverImgDirAndName = galleryData.cover.match(/(.*)\.(.*$)/)[1];
       var shareConfig = {
         title: (galleryData.date.getMonth() + 1) + '月' + galleryData.date.getDate() + '日 ' + galleryData.title, // 分享标题 TODO 不是今年要加年
@@ -328,7 +334,6 @@ function getJsSdkData() {
         link: location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=share', // 分享链接
         imgUrl: urlProtocol + urlConfig.download_domain + '/' + coverImgDirAndName + '_300x300_1.' + coverImgExt, // 分享图标
       }
-
       console.log(shareConfig.imgUrl);
 
       wx.config({
@@ -340,7 +345,6 @@ function getJsSdkData() {
         jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
       });
 
-
       // 分享给朋友
       wx.onMenuShareAppMessage({
         title: shareConfig.title,
@@ -348,7 +352,7 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + 'app.himoca.com:9981/Us/stat/setEventCount'})
+          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
             // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -362,7 +366,7 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + 'app.himoca.com:9981/Us/stat/setEventCount'})
+          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
             // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -377,7 +381,7 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + 'app.himoca.com:9981/Us/stat/setEventCount'})
+          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
            // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -392,7 +396,7 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + 'app.himoca.com:9981/Us/stat/setEventCount'})
+          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
            // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -407,7 +411,7 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + 'app.himoca.com:9981/Us/stat/setEventCount'})
+          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
            // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -425,16 +429,20 @@ function getJsSdkData() {
   })
 }
 
+    
+
 
 // 获取相册渲染数据
 function getGallery() {
+
   $.ajax({
     url: urlProtocol + urlConfig.init_domain + '/Us/event/detail',
     dataType: 'json',
     data: {
       invitation_code: getQueryStringArgs().invitation_code,
       login_uid: galleryData.uid ? galleryData.uid : "",
-      tag: getQueryStringArgs().target
+      tag: getQueryStringArgs().target,
+      platform: 2
     },
     success: function (d) {
       console.log(d);
@@ -555,6 +563,7 @@ function getGallery() {
         $('.gallery-authors').css('max-width',galleryauthorsWidth);
 
 
+
         // 从sessionStorage中查看是否刚上传过的标记，有则给个提示，并删掉标记
         console.log(sessionStorage);
         $(document.body).append('<div class="hint global-hint hint-dismissible"><button type="button" class="close"><span>×</span></button>你上传的图片已按拍摄时间顺序发布到相册<br>如果时间存在误差，请使用US应用进行编辑</div>')
@@ -569,7 +578,7 @@ function getGallery() {
         // 延迟图片加载
         $("img").lazyload({
           threshold: 0,
-          failure_limit : 4,
+          failure_limit : 9999,
           effect: "fadeIn",
           placeholder: 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw=='
         });
@@ -599,7 +608,7 @@ function getUrlConfig() {
     dataType: 'json',
     data: {
       version: 1,
-      platform: 0,
+      platform: 2,
     },
     success: function (d) {
       console.log(d);
@@ -662,18 +671,20 @@ $(function () {
   // 微信下邀请 的 打开us （临时，以后换应用宝）
   $('.toolbar-upload .open-app').on('click', function (e) {
     e.preventDefault();
-    $('.guide-to-open-in-browser').addClass('show').on('click', function () {
-      $(this).removeClass('show');
-    });
+    location.href = downloadLink.microdownload;
+    // $('.guide-to-open-in-browser').addClass('show').on('click', function () {
+    //   $(this).removeClass('show');
+    // });
   })
 
   // 分享页，的下载条 （临时，以后换应用宝）
   $('.toolbar-download').on('click', function (e) {
     e.preventDefault();
     if(environment.isWeixin) { // 微信下
-      $('.guide-to-open-in-browser').addClass('show').on('click', function () {
-        $(this).removeClass('show');
-      });
+      // $('.guide-to-open-in-browser').addClass('show').on('click', function () {
+      //   $(this).removeClass('show');
+      // });
+        location.href = downloadLink.microdownload;
     } else { // 非微信下
       if(environment.isIos) {
         location.href = downloadLink.ios;
