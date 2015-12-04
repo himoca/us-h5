@@ -186,19 +186,19 @@ function createMoment() {
 }
 
 //上传锁定提示
-// function activeLockTip() {
-//   var templateToolbarLockTip = _.template($('#template-activelocked-tip').text());
-//   var templateToolbarLockTipNicname = templateToolbarLockTip({locktipnicname: memberList.creaternicname});
-//   var $templateToolbarLockTipNicname = $(templateToolbarLockTipNicname);
-//   var $modalBackdrop = $('<div class="modal-backdrop"></div>');
-//   $templateToolbarLockTipNicname.addClass('show').appendTo('body');
-//   $('.locktipbtn').on('click', function (e) {
-//     e.preventDefault();
-//     $(this).closest('.locktip').removeClass('show');
-//     $modalBackdrop.removeClass('show');
-//   })
-//   $modalBackdrop.addClass('show').appendTo('body');
-// };
+function activeLockTip() {
+  var templateToolbarLockTip = _.template($('#template-activelocked-tip').text());
+  var templateToolbarLockTipNicname = templateToolbarLockTip({locktipnicname: memberList.creaternicname});
+  var $templateToolbarLockTipNicname = $(templateToolbarLockTipNicname);
+  var $modalBackdrop = $('<div class="modal-backdrop"></div>');
+  $templateToolbarLockTipNicname.addClass('show').appendTo('body');
+  $('.locktipbtn').on('click', function (e) {
+    e.preventDefault();
+    $(this).closest('.locktip').removeClass('show');
+    $modalBackdrop.removeClass('show');
+  })
+  $modalBackdrop.addClass('show').appendTo('body');
+};
 
 
 
@@ -292,6 +292,7 @@ function uploadFile() {
     $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
   }).on('fileuploaddone', function (e, data) {
     //pokola 检查c端口，如果报403，则取消commit，提示已锁定，如果正常，则执行commit。(暂时无法实现)
+    
     console.log('上传done', data);
     // alert('上传完成')
     pictureIndex++;   
@@ -304,8 +305,8 @@ function uploadFile() {
       commitUpload(pictureIdArray.join(','));
 
     }
-
   })
+
 }
 
 // 所有图片都上传完了要commit一下
@@ -322,7 +323,7 @@ function commitUpload(picture_ids) {
     },
     success: function (d) {
       //alert('完成后返回');
-      console.log('commit返回',d);
+      // console.log('commit返回',d);
       // if (d.c == 403) {
       //   //alert('活动已被锁定，上传失败，请联系活动发起者。');
       //   activeLockTip();
