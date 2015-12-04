@@ -16,6 +16,7 @@ if(location.protocol === 'file:') {
 }
 
 var urlConfig = {};
+var memberList = {};
 
 var appId;
 // 正式环境
@@ -184,6 +185,24 @@ function createMoment() {
   })
 }
 
+//上传锁定提示
+// function activeLockTip() {
+//   var templateToolbarLockTip = _.template($('#template-activelocked-tip').text());
+//   var templateToolbarLockTipNicname = templateToolbarLockTip({locktipnicname: memberList.creaternicname});
+//   var $templateToolbarLockTipNicname = $(templateToolbarLockTipNicname);
+//   var $modalBackdrop = $('<div class="modal-backdrop"></div>');
+//   $templateToolbarLockTipNicname.addClass('show').appendTo('body');
+//   $('.locktipbtn').on('click', function (e) {
+//     e.preventDefault();
+//     $(this).closest('.locktip').removeClass('show');
+//     $modalBackdrop.removeClass('show');
+//   })
+//   $modalBackdrop.addClass('show').appendTo('body');
+// };
+
+
+
+//上传图片
 function uploadFile() {
   var pictureIdArray = [];
   var pictureIndex = 0;
@@ -272,11 +291,10 @@ function uploadFile() {
     var progress = parseInt(data.loaded / data.total * 100, 10);
     $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
   }).on('fileuploaddone', function (e, data) {
-    //pokola 检查c端口，如果报403，则取消commit，提示已锁定，如果正常，则执行commit
-
+    //pokola 检查c端口，如果报403，则取消commit，提示已锁定，如果正常，则执行commit。(暂时无法实现)
     console.log('上传done', data);
     // alert('上传完成')
-    pictureIndex++;   //pokola
+    pictureIndex++;   
     // $('.toolbar-bottom .file-uploaded').html(pictureIndex);
     pictureIdArray.push(data.result.p.picture_id);
 
@@ -303,10 +321,16 @@ function commitUpload(picture_ids) {
       platform: 2
     },
     success: function (d) {
-      // alert('完成后返回')
+      //alert('完成后返回');
       console.log('commit返回',d);
+      // if (d.c == 403) {
+      //   //alert('活动已被锁定，上传失败，请联系活动发起者。');
+      //   activeLockTip();
+      // }else{
       sessionStorage['just-uploaded'] = "1";
       location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
+      // }
+      
     }
   })
 }
@@ -450,6 +474,7 @@ function getGallery() {
         alert(JSON.stringify(d))
       }
 
+      memberList.creaternicname = d.p.member[0].n;
       console.log(urlConfig);
 
       var templateJSON = d.p.template.band;
@@ -562,8 +587,6 @@ function getGallery() {
         var galleryauthorsWidth = galleryData.memberlength*40 + 'px';
         $('.gallery-authors').css('max-width',galleryauthorsWidth);
 
-
-
         // 从sessionStorage中查看是否刚上传过的标记，有则给个提示，并删掉标记
         console.log(sessionStorage);
         $(document.body).append('<div class="hint global-hint hint-dismissible"><button type="button" class="close"><span>×</span></button>你上传的图片已按拍摄时间顺序发布到相册<br>如果时间存在误差，请使用US应用进行编辑</div>')
@@ -668,7 +691,7 @@ $(function () {
 
   getUrlConfig();
 
-  // 微信下邀请 的 打开us （临时，以后换应用宝）
+  // 微信下邀请 的 打开us （已换微下载）
   $('.toolbar-upload .open-app').on('click', function (e) {
     e.preventDefault();
     location.href = downloadLink.microdownload;
@@ -677,7 +700,7 @@ $(function () {
     // });
   })
 
-  // 分享页，的下载条 （临时，以后换应用宝）
+  // 分享页，的下载条 （已换微下载）
   $('.toolbar-download').on('click', function (e) {
     e.preventDefault();
     if(environment.isWeixin) { // 微信下
@@ -702,7 +725,7 @@ $(function () {
   //   console.log(e.clipboardData.getData('text/plain'));
   // })
 
-
+  //邀请码
   $('.toolbar-invitation-code a').on('click', function (e) {
     e.preventDefault();
     var templateToolbarInvitationCode = _.template($('#template-invitation-code').text());
@@ -713,7 +736,7 @@ $(function () {
       $(this).closest('.modal').removeClass('show');
       $modalBackdrop.removeClass('show');
     })
-    $templateToolbarInvitationCodeCompiled.addClass('show').appendTo('body').on('click', '.btn', function (e) {
+    $templateToolbarInvitationCodeCompiled.addClass('show').appendTo('body').on('click', '.invitationbtn', function (e) {
       e.preventDefault();
       if(environment.isIos) {
         location.href = downloadLink.ios;
@@ -723,7 +746,7 @@ $(function () {
       }
     });
     $modalBackdrop.addClass('show').appendTo('body');
-  })
+  });
 
 
 
