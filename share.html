@@ -29,7 +29,7 @@
 
   <script src="bower_components/moment/min/moment.min.js"></script>
 
-  <script src="js/gallery-layout.js?2015120405"></script>
+  <script src="js/gallery-layout.js?2015120703"></script>
 
   <script type="text/template" id="template-main">
     <% var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/' %>
@@ -40,7 +40,7 @@
       <% var photoFile = cover_page, photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2], photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1]; %>
       <div class="gallery-cover">
         <div class="gallery-cover-inner">
-          <img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + '_1.' + photoFileExt %>" alt="">
+          <img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + '.' + photoFileExt %>" alt="">
         </div>
       </div>
       <div class="gallery-authors">
@@ -153,8 +153,8 @@
 <!-- 适用于邀请且可以辨识用户的环境，直接上传文件，目前就微信 -->
 <div class="toolbar-bottom toolbar-upload">
   <div class="state state-normal">
-    <a class="open-app" href="#">使用us打开</a>
-    <label class="upload-file-container" for="input-file">上传照片
+    <a class="open-app" href="#"></a>
+    <label class="upload-file-container" for="input-file">
       <input type="file" name="file" id="input-file" accept="image/*" multiple>
     </label>
   </div>
@@ -169,6 +169,11 @@
 <!-- 适用于邀请但没有用户关联，弹出邀请码，复制，目前非微信环境 -->
 <div class="toolbar-bottom toolbar-invitation-code">
   <a href="#">上传照片</a>
+</div>
+
+<!-- 上传失败时提示重试，点击后刷新页面 -->
+<div class="uploadfail-bottom">
+  <a href="#">上传失败，请点击重试</a>
 </div>
 
 

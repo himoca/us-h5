@@ -33,10 +33,10 @@ if (location.host === 'ios.himoca.com') {
 }
 
 var galleryConfig = {
-  header: false,
-  headerHeight: 93,
-  footerWidthDescriptionHeight: 135,
-  footerWidthoutDexcriptionHeight: 75,
+  header: false,  //头部
+  headerHeight: 93,  //头部高度
+  footerWidthDescriptionHeight: 135,  //页脚宽度描述高度135
+  footerWidthoutDexcriptionHeight: 75, //页脚外宽度描述高度
   filterType: -1 // -1是原图  0是1977  1是lomoFi  2是Hefe  3是Inkwell
 }
 
@@ -56,6 +56,7 @@ var galleryData = {
   fixedTemplateIndex: [], // 最后一组模板特殊处理，
 }
 
+
 var downloadLink = {
   ios: 'https://itunes.apple.com/cn/app/us/id1041870519',
   android: 'http://us.himoca.com/apk/moca_us.apk',
@@ -69,7 +70,8 @@ var environment = {
   isWeixinLogin: !!getQueryStringArgs().code,
   isQq: (/QQ/i).test(ua),
   isIos: (ua.indexOf('Mac') > -1 && ua.indexOf('Mobile') > -1),
-  isAndroid: (ua.indexOf('Mozilla/5.0') > -1 && ua.indexOf('Android ') > -1 && ua.indexOf('AppleWebKit') > -1)
+  isAndroid: (ua.indexOf('Mozilla/5.0') > -1 && ua.indexOf('Android ') > -1 && ua.indexOf('AppleWebKit') > -1),
+  isWeibo: (ua.indexOf('Weibo') > -1)
 }
 
 if (enableAlertDebug) {
@@ -98,6 +100,7 @@ function getQueryStringArgs() {
   }
   return args;
 }
+
 
 // 根据需要返回2倍图大小
 function getRetinaImgSize(size) {
@@ -137,7 +140,6 @@ function register() {
       phone_model: 'web'
     },
     success: function (d) {
-
       // if(enableAlertDebug) {
       //   alert('register返回' + d);
       // }
@@ -159,6 +161,7 @@ function register() {
   })
 }
 
+
 // 创建动态，为了获得moment_id
 function createMoment() {
   if (enableAlertDebug) {
@@ -170,8 +173,8 @@ function createMoment() {
     data: {
       event_id: galleryData.eventId,
       login_uid: galleryData.uid,
+      // session_key: galleryData.sessionKey,
       platform: 2
-      // session_key: galleryData.sessionKey
     },
     success: function (d) {
       if (enableAlertDebug) {
@@ -180,8 +183,15 @@ function createMoment() {
 
       console.log('createMoment', d);
       galleryData.momentId = d.p.moment_id;
+      //统一显示上传照片
+      $('.toolbar-upload').addClass('active');
+      $('.open-app').html("使用us打开");
+      $('.upload-file-container').append("上传照片");
       uploadFile();
     }
+    // error: function(){
+    //   alert(galleryData.sessionKey);
+    // }
   })
 }
 
@@ -200,113 +210,154 @@ function activeLockTip() {
   $modalBackdrop.addClass('show').appendTo('body');
 };
 
+//网页已加载后，上传失败锁定提示
+function appearLockTip() {
+  var templateToolbarLockTip = _.template($('#template-activelocked-tip').text());
+  var templateToolbarLockTipNicname = templateToolbarLockTip({locktipnicname: memberList.creaternicname});
+  var $templateToolbarLockTipNicname = $(templateToolbarLockTipNicname);
+  var $modalBackdrop = $('<div class="modal-backdrop"></div>');
+  $templateToolbarLockTipNicname.addClass('show').appendTo('body');
+  $('.locktipbtn').on('click', function (e) {
+    e.preventDefault();
+    $(this).closest('.locktip').removeClass('show');
+    $modalBackdrop.removeClass('show');
+    location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
+  })
+  $modalBackdrop.addClass('show').appendTo('body');
+};
+
 
 
 //上传图片
 function uploadFile() {
   var pictureIdArray = [];
   var pictureIndex = 0;
-  $('#input-file').fileupload({
-    url: urlProtocol + urlConfig.upload_domain + '/Us/Event/upload',
-    dataType: 'json',
-    // sequentialUploads: true,
-    // limitConcurrentUploads: true,
-    // multipart: ,
-    autoUpload: enableDesktopDebug ? false : true,
-    disableImageResize: /Android(?!.*Chrome)|Opera/.test(window.navigator && navigator.userAgent),  //是否可用调整图片大小
-    // imageMaxWidth: 1080,
-    // imageMaxHeight: 1080,
-    imageOrientation: true, // 采用exif中的方向
-    disableImageMetaDataSave: true, // imageOrientation旋转图片并没有更改exif中的方向，这样导致终端渲染图片时如果要依赖于图片的exif中的orientation，会渲染错误，disableImageMetaDataSave直接不保存exif信息
-    imageType: 'image/jpeg', // 转换格式
-    imageQuality: 0.5, // 图片质量
-  }).on('fileuploadadd', function (e, data) {
-    var formData = {},
-      exif,
-      options = {};
+  $('.upload-file-container').click(function(){
+    $.ajax({
+      url: urlProtocol + urlConfig.init_domain + '/Us/Event/CreateMoment',
+      dataType: 'json',
+      data: {
+        event_id: galleryData.eventId,
+        login_uid: galleryData.uid,
+        // session_key: galleryData.sessionKey,
+        platform: 2
+      },
+      success: function (d) {
+        // alert(JSON.stringify(d));
+        if (d.c == 403) {
+          activeLockTip();
+        }else {
+          $('#input-file').fileupload({
+            url: urlProtocol + urlConfig.upload_domain + '/Us/Event/upload',
+            dataType: 'json',
+            // sequentialUploads: true,
+            // limitConcurrentUploads: true,
+            // multipart: ,
+            autoUpload: enableDesktopDebug ? false : true,
+            disableImageResize: /Android(?!.*Chrome)|Opera/.test(window.navigator && navigator.userAgent),  //是否可用调整图片大小
+            // imageMaxWidth: 1080,
+            // imageMaxHeight: 1080,
+            imageOrientation: true, // 采用exif中的方向
+            disableImageMetaDataSave: true, // imageOrientation旋转图片并没有更改exif中的方向，这样导致终端渲染图片时如果要依赖于图片的exif中的orientation，会渲染错误，disableImageMetaDataSave直接不保存exif信息
+            imageType: 'image/jpeg', // 转换格式
+            imageQuality: 0.5, // 图片质量
+          }).on('fileuploadadd', function (e, data) {
+            var formData = {},
+              exif,
+              options = {};
 
-    console.log(e);
-    $('.state').addClass('hide');
-    $('.state-upload').removeClass('hide');
+            console.log(e);
+            $('.state').addClass('hide');
+            $('.state-upload').removeClass('hide');
 
-    loadImage(
-      data.files[0],
-      function (img) {
+            loadImage(
+              data.files[0],
+              function (img) {
 
-        formData.login_uid = galleryData.uid;
-        formData.moment_id = galleryData.momentId;
-        formData.event_id = galleryData.eventId;
-        // formData.session_key = galleryData.session_key;
-        formData.size = img.width + 'x' + img.height;
-        data.formData = formData;
-        console.log(data);
-
-
-        console.log(img);
+                formData.login_uid = galleryData.uid;
+                formData.moment_id = galleryData.momentId;
+                formData.event_id = galleryData.eventId;
+                // formData.session_key = galleryData.sessionkey;
+                formData.size = img.width + 'x' + img.height;
+                data.formData = formData;
+                console.log(data);
 
 
-      }, options);
+                console.log(img);
 
-    loadImage.parseMetaData(
-      data.files[0],
-      function (exifData) {
-        console.log(exifData);
-        console.log(exifData.exif);
-        if(exifData.exif) {
-          exif = exifData.exif;
-          console.log(exifData.exif.getAll());
 
-          options.orientation = exif.get('Orientation');
-          // exif中保存的源数据类似这样 "2015:10:27 11:05:37"，要转成时间戳
-          // console.log(moment("2015:10:27 11:05:37", 'YYYY:MM:DD HH:mm:ss').valueOf());
-          if(exifData.exif.get('DateTimeDigitized')) {
-            formData.shoot_time = moment(exifData.exif.get('DateTimeDigitized'), 'YYYY:MM:DD HH:mm:ss').valueOf();
-          } else if(exifData.exif.get('DateTime')) {
-            formData.shoot_time = moment(exifData.exif.get('DateTime'), 'YYYY:MM:DD HH:mm:ss').valueOf();
-          } else {
-            formData.shoot_time = data.originalFiles[0].lastModifiedDate.getTime();
-          }
-          console.log(formData.shoot_time);
+              }, options);
 
-        } else {
-          // 如果没有exif就用文件的lastModifiedDate
-          console.log(data.originalFiles[0].lastModifiedDate);
-          formData.shoot_time = data.originalFiles[0].lastModifiedDate.getTime();
-          console.log(formData.shoot_time);
 
-        }
+            loadImage.parseMetaData(
+              data.files[0],
+              function (exifData) {
+                console.log(exifData);
+                console.log(exifData.exif);
+                if(exifData.exif) {
+                  exif = exifData.exif;
+                  console.log(exifData.exif.getAll());
 
+                  options.orientation = exif.get('Orientation');
+                  // exif中保存的源数据类似这样 "2015:10:27 11:05:37"，要转成时间戳
+                  // console.log(moment("2015:10:27 11:05:37", 'YYYY:MM:DD HH:mm:ss').valueOf());
+                  if(exifData.exif.get('DateTimeDigitized')) {
+                    formData.shoot_time = moment(exifData.exif.get('DateTimeDigitized'), 'YYYY:MM:DD HH:mm:ss').valueOf();
+                  } else if(exifData.exif.get('DateTime')) {
+                    formData.shoot_time = moment(exifData.exif.get('DateTime'), 'YYYY:MM:DD HH:mm:ss').valueOf();
+                  } else {
+                    formData.shoot_time = data.originalFiles[0].lastModifiedDate.getTime();
+                  }
+                  console.log(formData.shoot_time);
+
+                } else {
+                  // 如果没有exif就用文件的lastModifiedDate
+                  console.log(data.originalFiles[0].lastModifiedDate);
+                  formData.shoot_time = data.originalFiles[0].lastModifiedDate.getTime();
+                  console.log(formData.shoot_time);
+
+                }
+
+              }
+            );
+
+
+            // var totalFileNum = data.files.length;
+            // var $totalFile = $('.file-total');
+
+            // $totalFile.html(data.originalFiles.length);
+            // console.log(data);
+          }).on('fileuploadprogressall', function (e, data) {
+            // console.log(data.loaded + '/' + data.total);
+            // console.log(data);
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+
+            $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
+          })
+          // .on('fileuploadfail', function (e, data) {
+          //   //上传失败时，提示失败重试
+          //   alert(e);
+          //    $('.toolbar-bottom').removeClass('active');
+          //    $('.uploadfail-bottom').addClass('active').on('click',function(){
+          //        location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
+          //    });
+          // })
+          .on('fileuploaddone', function (e, data) {
+            console.log('上传done', data);
+            // alert('上传完成')
+            pictureIndex++;   
+            // $('.toolbar-bottom .file-uploaded').html(pictureIndex);
+            pictureIdArray.push(data.result.p.picture_id);
+
+            console.log('picture_ids为' + data.result.p.picture_id, 'moment_id为' + galleryData.momentId, 'event_id' + galleryData.eventId);
+            if(pictureIndex === data.originalFiles.length) {
+              commitUpload(pictureIdArray.join(','));
+            }
+          })
+        }; //判断结束
       }
-    );
-
-
-    // var totalFileNum = data.files.length;
-    // var $totalFile = $('.file-total');
-
-    // $totalFile.html(data.originalFiles.length);
-    // console.log(data);
-  }).on('fileuploadprogressall', function (e, data) {
-    // console.log(data.loaded + '/' + data.total);
-    // console.log(data);
-    var progress = parseInt(data.loaded / data.total * 100, 10);
-    $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
-  }).on('fileuploaddone', function (e, data) {
-    //pokola 检查c端口，如果报403，则取消commit，提示已锁定，如果正常，则执行commit。(暂时无法实现)
-    
-    console.log('上传done', data);
-    // alert('上传完成')
-    pictureIndex++;   
-    // $('.toolbar-bottom .file-uploaded').html(pictureIndex);
-    pictureIdArray.push(data.result.p.picture_id);
-
-    console.log('picture_ids为' + data.result.p.picture_id, 'moment_id为' + galleryData.momentId, 'event_id' + galleryData.eventId);
-
-    if(pictureIndex === data.originalFiles.length) {
-      commitUpload(pictureIdArray.join(','));
-
-    }
-  })
-
+    });
+  });
 }
 
 // 所有图片都上传完了要commit一下
@@ -321,17 +372,20 @@ function commitUpload(picture_ids) {
       picture_ids: picture_ids,
       platform: 2
     },
+    // error: function(){
+    //   activeLockTip();
+    // },
     success: function (d) {
       //alert('完成后返回');
-      // console.log('commit返回',d);
-      // if (d.c == 403) {
-      //   //alert('活动已被锁定，上传失败，请联系活动发起者。');
-      //   activeLockTip();
-      // }else{
+      //判断活动是否锁定，是则不允许上传照片
+      if (d.c == 403) {
+        appearLockTip();
+        
+      }else {
+      console.log('commit返回',d);
       sessionStorage['just-uploaded'] = "1";
       location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
-      // }
-      
+      }
     }
   })
 }
@@ -539,9 +593,9 @@ function getGallery() {
             $(v).attr('data-photo-description-num', photoDescriptionNum);
 
             if(photoDescriptionNum > 0) {
-              var footerHeight = galleryConfig.footerWidthDescriptionHeight;
+              var footerHeight = galleryConfig.footerWidthDescriptionHeight; //135
             } else {
-              var footerHeight = galleryConfig.footerWidthoutDexcriptionHeight;
+              var footerHeight = galleryConfig.footerWidthoutDexcriptionHeight; //75
             }
             photoGroupHeight = photoGroupHeight - galleryConfig.headerHeight - originalFooterHeight + footerHeight;
             $photoGroup.css({'padding-bottom': photoGroupHeight/mainWidth*100 + '%'})
@@ -653,7 +707,7 @@ function getUrlConfig() {
       // 如果在微信中且得到code后，则触发 登录 和 获取微信配置信息
       if(environment.isWeixin && environment.isWeixinLogin) {
         $('.toolbar-bottom').removeClass('active');
-        $('.toolbar-upload').addClass('active');
+        //$('.toolbar-upload').addClass('disguiseactive');
         // 注册
         register();
 
@@ -677,11 +731,11 @@ function getUrlConfig() {
         getGallery();
       }
 
-      if(enableDesktopDebug) {
-        $('.toolbar-bottom').removeClass('active');
-        // $('.toolbar-upload').addClass('active');
-        $('.toolbar-download').addClass('active');
-      }
+      // if(enableDesktopDebug) {
+      //   $('.toolbar-bottom').removeClass('active');
+      //   // $('.toolbar-upload').addClass('active');
+      //   $('.toolbar-download').addClass('active');
+      // }
 
     }
   });
@@ -716,8 +770,12 @@ $(function () {
       if(environment.isAndroid) {
         location.href = downloadLink.android;
       }
-
-    }
+      if(environment.isWeibo) {
+        $('.guide-to-open-in-browser').addClass('show').on('click', function () {
+          $(this).removeClass('show');
+        });
+      }
+    } 
   })
 
 
