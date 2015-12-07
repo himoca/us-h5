@@ -151,47 +151,13 @@ function register() {
       if (enableAlertDebug) {
         alert('register返回' + JSON.stringify(d));
       }
-      // galleryData.sessionKey = d.session_key;
+      //galleryData.sessionKey = d.session_key;
       galleryData.avatar = d.avatar;
       galleryData.uid = d.uid;
       galleryData.nickname = d.nickname;
 
       if(d.uid) getGallery();
     }
-  })
-}
-
-
-// 创建动态，为了获得moment_id
-function createMoment() {
-  if (enableAlertDebug) {
-    alert('创建动态发送的event_id为' + galleryData.eventId + 'login_uid为' + galleryData.uid)
-  }
-  $.ajax({
-    url: urlProtocol + urlConfig.init_domain + '/Us/Event/CreateMoment',
-    dataType: 'json',
-    data: {
-      event_id: galleryData.eventId,
-      login_uid: galleryData.uid,
-      // session_key: galleryData.sessionKey,
-      platform: 2
-    },
-    success: function (d) {
-      if (enableAlertDebug) {
-        alert(JSON.stringify(d))
-      }
-
-      console.log('createMoment', d);
-      galleryData.momentId = d.p.moment_id;
-      //统一显示上传照片
-      $('.toolbar-upload').addClass('active');
-      $('.open-app').html("使用us打开");
-      $('.upload-file-container').append("上传照片");
-      uploadFile();
-    }
-    // error: function(){
-    //   alert(galleryData.sessionKey);
-    // }
   })
 }
 
@@ -239,11 +205,11 @@ function uploadFile() {
       data: {
         event_id: galleryData.eventId,
         login_uid: galleryData.uid,
-        // session_key: galleryData.sessionKey,
+        //session_key: galleryData.sessionKey,
         platform: 2
       },
       success: function (d) {
-        // alert(JSON.stringify(d));
+        galleryData.momentId = d.p.moment_id;
         if (d.c == 403) {
           activeLockTip();
         }else {
@@ -331,18 +297,8 @@ function uploadFile() {
             // console.log(data.loaded + '/' + data.total);
             // console.log(data);
             var progress = parseInt(data.loaded / data.total * 100, 10);
-
             $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
-          })
-          // .on('fileuploadfail', function (e, data) {
-          //   //上传失败时，提示失败重试
-          //   alert(e);
-          //    $('.toolbar-bottom').removeClass('active');
-          //    $('.uploadfail-bottom').addClass('active').on('click',function(){
-          //        location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
-          //    });
-          // })
-          .on('fileuploaddone', function (e, data) {
+          }).on('fileuploaddone', function (e, data) {
             console.log('上传done', data);
             // alert('上传完成')
             pictureIndex++;   
@@ -369,18 +325,21 @@ function commitUpload(picture_ids) {
       moment_id: galleryData.momentId,
       event_id: galleryData.eventId,
       login_uid: galleryData.uid,
+      //session_key: galleryData.sessionKey,
       picture_ids: picture_ids,
       platform: 2
     },
     // error: function(){
-    //   activeLockTip();
+    //   alert('momentid为' + galleryData.momentId);
+    //   alert('eventId为' + galleryData.eventId);
+    //   alert('uid为' + galleryData.uid);
+    //   alert('picture_ids为' + picture_ids);
     // },
     success: function (d) {
       //alert('完成后返回');
       //判断活动是否锁定，是则不允许上传照片
       if (d.c == 403) {
         appearLockTip();
-        
       }else {
       console.log('commit返回',d);
       sessionStorage['just-uploaded'] = "1";
@@ -513,7 +472,6 @@ function getJsSdkData() {
 
 // 获取相册渲染数据
 function getGallery() {
-
   $.ajax({
     url: urlProtocol + urlConfig.init_domain + '/Us/event/detail',
     dataType: 'json',
@@ -665,7 +623,7 @@ function getGallery() {
         initPhotoSwipeFromDOM('.photo-group-container');
 
         // 获取到uid时
-        if(galleryData.uid) createMoment();
+        if(galleryData.uid) uploadFile();
 
         if(environment.isWeixin) {
           getJsSdkData();
@@ -707,7 +665,7 @@ function getUrlConfig() {
       // 如果在微信中且得到code后，则触发 登录 和 获取微信配置信息
       if(environment.isWeixin && environment.isWeixinLogin) {
         $('.toolbar-bottom').removeClass('active');
-        //$('.toolbar-upload').addClass('disguiseactive');
+        $('.toolbar-upload').addClass('active');
         // 注册
         register();
 
