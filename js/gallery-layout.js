@@ -151,7 +151,7 @@ function register() {
       if (enableAlertDebug) {
         alert('register返回' + JSON.stringify(d));
       }
-      //galleryData.sessionKey = d.session_key;
+      galleryData.sessionKey = d.session_key;
       galleryData.avatar = d.avatar;
       galleryData.uid = d.uid;
       galleryData.nickname = d.nickname;
@@ -205,7 +205,7 @@ function uploadFile() {
       data: {
         event_id: galleryData.eventId,
         login_uid: galleryData.uid,
-        //session_key: galleryData.sessionKey,
+        session_key: galleryData.sessionKey,
         platform: 2
       },
       success: function (d) {
@@ -243,15 +243,13 @@ function uploadFile() {
                 formData.login_uid = galleryData.uid;
                 formData.moment_id = galleryData.momentId;
                 formData.event_id = galleryData.eventId;
-                // formData.session_key = galleryData.sessionkey;
+                formData.session_key = galleryData.sessionKey;
                 formData.size = img.width + 'x' + img.height;
                 data.formData = formData;
                 console.log(data);
 
-
                 console.log(img);
-
-
+                 
               }, options);
 
 
@@ -287,7 +285,7 @@ function uploadFile() {
               }
             );
 
-
+           
             // var totalFileNum = data.files.length;
             // var $totalFile = $('.file-total');
 
@@ -299,12 +297,14 @@ function uploadFile() {
             var progress = parseInt(data.loaded / data.total * 100, 10);
             $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
           }).on('fileuploaddone', function (e, data) {
+
             console.log('上传done', data);
             // alert('上传完成')
             pictureIndex++;   
             // $('.toolbar-bottom .file-uploaded').html(pictureIndex);
             pictureIdArray.push(data.result.p.picture_id);
-
+            // alert(JSON.stringify(data.result));
+            
             console.log('picture_ids为' + data.result.p.picture_id, 'moment_id为' + galleryData.momentId, 'event_id' + galleryData.eventId);
             if(pictureIndex === data.originalFiles.length) {
               commitUpload(pictureIdArray.join(','));
@@ -325,7 +325,7 @@ function commitUpload(picture_ids) {
       moment_id: galleryData.momentId,
       event_id: galleryData.eventId,
       login_uid: galleryData.uid,
-      //session_key: galleryData.sessionKey,
+      session_key: galleryData.sessionKey,
       picture_ids: picture_ids,
       platform: 2
     },
@@ -487,6 +487,10 @@ function getGallery() {
         alert(JSON.stringify(d))
       }
 
+      if(environment.isWeixin) {
+        getJsSdkData();
+      }
+
       memberList.creaternicname = d.p.member[0].n;
       console.log(urlConfig);
 
@@ -519,6 +523,7 @@ function getGallery() {
         galleryData.memberlength = d.p.member.length; //poko
 
         document.title = galleryData.title;
+
 
         // console.log($templatePhotoGroupCompiled);
 
@@ -600,6 +605,7 @@ function getGallery() {
         var galleryauthorsWidth = galleryData.memberlength*40 + 'px';
         $('.gallery-authors').css('max-width',galleryauthorsWidth);
 
+        //alert(urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount');
         // 从sessionStorage中查看是否刚上传过的标记，有则给个提示，并删掉标记
         console.log(sessionStorage);
         $(document.body).append('<div class="hint global-hint hint-dismissible"><button type="button" class="close"><span>×</span></button>你上传的图片已按拍摄时间顺序发布到相册<br>如果时间存在误差，请使用US应用进行编辑</div>')
@@ -625,9 +631,7 @@ function getGallery() {
         // 获取到uid时
         if(galleryData.uid) uploadFile();
 
-        if(environment.isWeixin) {
-          getJsSdkData();
-        }
+        
 
       } else if(d.c == 403) {
         alert('活动不存在')
@@ -676,10 +680,10 @@ function getUrlConfig() {
 
         if(!environment.isQq) {
           if(environment.isIos) {
-            location.href = downloadLink.ios
+            location.href = downloadLink.microdownload
           }
           if(environment.isAndroid) {
-            location.href = downloadLink.android
+            location.href = downloadLink.microdownload
           }
         }
 
@@ -723,10 +727,10 @@ $(function () {
         location.href = downloadLink.microdownload;
     } else { // 非微信下
       if(environment.isIos) {
-        location.href = downloadLink.ios;
+        location.href = downloadLink.microdownload;
       }
       if(environment.isAndroid) {
-        location.href = downloadLink.android;
+        location.href = downloadLink.microdownload;
       }
       if(environment.isWeibo) {
         $('.guide-to-open-in-browser').addClass('show').on('click', function () {
@@ -756,10 +760,10 @@ $(function () {
     $templateToolbarInvitationCodeCompiled.addClass('show').appendTo('body').on('click', '.invitationbtn', function (e) {
       e.preventDefault();
       if(environment.isIos) {
-        location.href = downloadLink.ios;
+        location.href = downloadLink.microdownload;
       }
       if(environment.isAndroid) {
-        location.href = downloadLink.android;
+        location.href = downloadLink.microdownload;
       }
     });
     $modalBackdrop.addClass('show').appendTo('body');
