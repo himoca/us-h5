@@ -150,6 +150,8 @@ function register() {
       // }
       if (enableAlertDebug) {
         alert('register返回' + JSON.stringify(d));
+        alert(getQueryStringArgs().code);
+        //alert(getQueryStringArgs().invitation_code);
       }
       galleryData.sessionKey = d.session_key;
       galleryData.avatar = d.avatar;
@@ -390,7 +392,16 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
+          $.ajax({
+            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+            dataType: 'json',
+            data: {
+              invitation_code: getQueryStringArgs().invitation_code,
+              login_uid: galleryData.uid ? galleryData.uid : "",
+              tag: getQueryStringArgs().target,
+              platform: 2
+            },
+          })
             // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -404,7 +415,16 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
+          $.ajax({
+            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+            dataType: 'json',
+            data: {
+              invitation_code: getQueryStringArgs().invitation_code,
+              login_uid: galleryData.uid ? galleryData.uid : "",
+              tag: getQueryStringArgs().target,
+              platform: 2
+            },
+          })
             // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -419,7 +439,16 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
+          $.ajax({
+            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+            dataType: 'json',
+            data: {
+              invitation_code: getQueryStringArgs().invitation_code,
+              login_uid: galleryData.uid ? galleryData.uid : "",
+              tag: getQueryStringArgs().target,
+              platform: 2
+            },
+          })
            // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -434,7 +463,16 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
+          $.ajax({
+            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+            dataType: 'json',
+            data: {
+              invitation_code: getQueryStringArgs().invitation_code,
+              login_uid: galleryData.uid ? galleryData.uid : "",
+              tag: getQueryStringArgs().target,
+              platform: 2
+            },
+          })
            // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -449,7 +487,16 @@ function getJsSdkData() {
         link: shareConfig.link,
         imgUrl: shareConfig.imgUrl,
         success: function () {
-          $.ajax({url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount'})
+          $.ajax({
+            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+            dataType: 'json',
+            data: {
+              invitation_code: getQueryStringArgs().invitation_code,
+              login_uid: galleryData.uid ? galleryData.uid : "",
+              tag: getQueryStringArgs().target,
+              platform: 2
+            },
+          })
            // 用户确认分享后执行的回调函数
         },
         cancel: function () {
@@ -491,26 +538,26 @@ function getGallery() {
         getJsSdkData();
       }
 
-      memberList.creaternicname = d.p.member[0].n;
-      console.log(urlConfig);
+      if(d.c == 403) {
+        alert('活动不存在')
+      }else if(d.m === 'success') {
+        memberList.creaternicname = d.p.member[0].n;
+        console.log(urlConfig);
 
-      var templateJSON = d.p.template.band;
-      // 提取第一个特定数量的模块的索引
-      (function() {
-        for(var i = 0, len = templateJSON.length; i < len; i++) {
-          // if(templateJSON[i].rect.length)
-
-          var currentRectLen = templateJSON[i].rect.length;
-          if(galleryData.fixedTemplateIndex[currentRectLen - 1] === undefined) {
-            galleryData.fixedTemplateIndex[currentRectLen - 1] = i;
-          } else {
-            continue;
+        var templateJSON = d.p.template.band;
+        // 提取第一个特定数量的模块的索引
+        (function() {
+          for(var i = 0, len = templateJSON.length; i < len; i++) {
+            var currentRectLen = templateJSON[i].rect.length;
+            if(galleryData.fixedTemplateIndex[currentRectLen - 1] === undefined) {
+              galleryData.fixedTemplateIndex[currentRectLen - 1] = i;
+            } else {
+              continue;
+            }
           }
-        }
-      }());
-      console.log(galleryData.fixedTemplateIndex);
+        }());
+        console.log(galleryData.fixedTemplateIndex);
 
-      if(d.m === 'success') {
         var templateMain = _.template($('#template-main').text());
         var templateMainCompiled = templateMain(d.p);
         var $templateMainCompiled = $(templateMain(d.p));
@@ -631,12 +678,7 @@ function getGallery() {
         // 获取到uid时
         if(galleryData.uid) uploadFile();
 
-        
-
-      } else if(d.c == 403) {
-        alert('活动不存在')
-      }
-
+      } 
     }
   })
 }
