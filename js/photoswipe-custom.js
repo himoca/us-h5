@@ -84,6 +84,8 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
       loop: false,
       showHideOpacity: true,
       loadingIndicatorDelay: 500,
+      pinchToClose: false,
+      closeOnVerticalDrag: false,
       // getThumbBoundsFn: false,
       // focus: false,
       // tapToClose: true ,
@@ -127,7 +129,7 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
       _offset.x = 0;
       _offset.y = 0;
       // console.log(_offset);
-      console.log(gallery);
+      //console.log(gallery);
 
     });
 

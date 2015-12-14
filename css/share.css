@@ -1500,3 +1500,14 @@ body.with-toolbar-bottom {
   opacity: 0 !important;
 }
 /*# sourceMappingURL=share.css.map */
+
+/*.show-author-img {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: -100px 0 0 -100px;
+  width: 200px;
+  height: 200px;
+  background: red;
+}*/

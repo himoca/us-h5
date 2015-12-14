@@ -310,7 +310,7 @@ var DOUBLE_TAP_RADIUS = 25,
  * Options
  */
 var _options = {
-	allowPanToNext:true,
+	allowPanToNext: true,
 	spacing: 0.12,
 	bgOpacity: 1,
 	mouseUsed: false,

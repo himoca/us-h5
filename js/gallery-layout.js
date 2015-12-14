@@ -178,7 +178,7 @@ function activeLockTip() {
   $modalBackdrop.addClass('show').appendTo('body');
 };
 
-//网页已加载后，上传失败锁定提示
+//网页已加载后，上传失败锁定提示，确定后刷新页面
 function appearLockTip() {
   var templateToolbarLockTip = _.template($('#template-activelocked-tip').text());
   var templateToolbarLockTipNicname = templateToolbarLockTip({locktipnicname: memberList.creaternicname});
@@ -194,13 +194,44 @@ function appearLockTip() {
   $modalBackdrop.addClass('show').appendTo('body');
 };
 
+function createMoment() {
+  if (enableAlertDebug) {
+    alert('创建动态发送的event_id为' + galleryData.eventId + 'login_uid为' + galleryData.uid)
+  }
+  $.ajax({
+    url: urlProtocol + urlConfig.init_domain + '/Us/Event/CreateMoment',
+    dataType: 'json',
+    data: {
+      event_id: galleryData.eventId,
+      login_uid: galleryData.uid,
+      session_key: galleryData.sessionKey,
+      platform: 2
+    },
+    success: function (d) {
+      if (enableAlertDebug) {
+        alert(JSON.stringify(d))
+      }
 
+      console.log('createMoment', d);
+      galleryData.momentId = d.p.moment_id;
+      if (d.c == 403) {
+        $('.upload-file-container').html("上传照片").on('click',function(){
+            activeLockTip();
+        });
+      }else {
+      uploadFile();
+      }
+    }
+  })
+}
 
 //上传图片
 function uploadFile() {
   var pictureIdArray = [];
   var pictureIndex = 0;
-  $('.upload-file-container').click(function(){
+  var uploadCount = 0;
+  // var verifyArray = [poko.jpg,image/jpeg,/tmp/phpCfhbix,0,1];
+  $('.upload-file-container').on("click",function(){
     $.ajax({
       url: urlProtocol + urlConfig.init_domain + '/Us/Event/CreateMoment',
       dataType: 'json',
@@ -209,12 +240,19 @@ function uploadFile() {
         login_uid: galleryData.uid,
         session_key: galleryData.sessionKey,
         platform: 2
+        // shoot_time: '1449657800000',
+        // login_uid: galleryData.uid,
+        // moment_id: galleryData.momentId,
+        // event_id: galleryData.eventId,
+        // session_key: galleryData.sessionKey,
+        // file: verifyArray,
+        // size: '1x1'
       },
       success: function (d) {
-        galleryData.momentId = d.p.moment_id;
-        if (d.c == 403) {
+        if (d.c == 403 && uploadCount == 0) {
           activeLockTip();
         }else {
+          uploadCount++;
           $('#input-file').fileupload({
             url: urlProtocol + urlConfig.upload_domain + '/Us/Event/upload',
             dataType: 'json',
@@ -298,8 +336,15 @@ function uploadFile() {
             // console.log(data);
             var progress = parseInt(data.loaded / data.total * 100, 10);
             $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
+          }).on('fileuploadfail',function(){
+            $('.state-progress').hide();
+            $('.state-text').css({margin:"0 auto",color:"#f00"}).html("上传失败，请点击重试").on('click',function(){
+              location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
+            });
           }).on('fileuploaddone', function (e, data) {
-
+            // alert(JSON.stringify(data.files[0].preview));
+            // $('.state-progress').hide();  //上传完成提示
+            // $('.state-text').css("margin","0 auto").html("上传完成！等待验证中……");
             console.log('上传done', data);
             // alert('上传完成')
             pictureIndex++;   
@@ -340,7 +385,7 @@ function commitUpload(picture_ids) {
     success: function (d) {
       //alert('完成后返回');
       //判断活动是否锁定，是则不允许上传照片
-      if (d.c == 403) {
+      if(d.c == 403){
         appearLockTip();
       }else {
       console.log('commit返回',d);
@@ -368,10 +413,15 @@ function getJsSdkData() {
 
       //pokola
       var coverImgExt = galleryData.cover.match(/(.*)\.(.*$)/)[2], coverImgDirAndName = galleryData.cover.match(/(.*)\.(.*$)/)[1];
+      // if ( galleryData.invitationCode == getQueryStringArgs().invitation_code) {
+      // 	var str = 'invite';
+      // }else {
+      // 	var str = 'share';
+      // }
       var shareConfig = {
         title: (galleryData.date.getMonth() + 1) + '月' + galleryData.date.getDate() + '日 ' + galleryData.title, // 分享标题 TODO 不是今年要加年
         desc: 'US.非凡的活动记录者', // 分享描述
-        link: location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=share', // 分享链接
+        link: location.host + location.pathname + '?invitation_code=' + galleryData.invitationCode + '&target=share', // 分享链接
         imgUrl: urlProtocol + urlConfig.download_domain + '/' + coverImgDirAndName + '_300x300_1.' + coverImgExt, // 分享图标
       }
       console.log(shareConfig.imgUrl);
@@ -382,128 +432,134 @@ function getJsSdkData() {
         timestamp: d.timestamp, // 必填，生成签名的时间戳
         nonceStr: d.noncestr, // 必填，生成签名的随机串
         signature: d.signature, // 必填，签名，见附录1
-        jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        jsApiList: ['showOptionMenu', 'onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
       });
 
-      // 分享给朋友
-      wx.onMenuShareAppMessage({
-        title: shareConfig.title,
-        desc: shareConfig.desc,
-        link: shareConfig.link,
-        imgUrl: shareConfig.imgUrl,
-        success: function () {
-          $.ajax({
-            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
-            dataType: 'json',
-            data: {
-              invitation_code: getQueryStringArgs().invitation_code,
-              login_uid: galleryData.uid ? galleryData.uid : "",
-              tag: getQueryStringArgs().target,
-              platform: 2
-            },
-          })
-            // 用户确认分享后执行的回调函数
-        },
-        cancel: function () {
-            // 用户取消分享后执行的回调函数
-        }
-      });
 
-      // 分享到朋友圈
-      wx.onMenuShareTimeline({
-        title: shareConfig.title,
-        link: shareConfig.link,
-        imgUrl: shareConfig.imgUrl,
-        success: function () {
-          $.ajax({
-            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
-            dataType: 'json',
-            data: {
-              invitation_code: getQueryStringArgs().invitation_code,
-              login_uid: galleryData.uid ? galleryData.uid : "",
-              tag: getQueryStringArgs().target,
-              platform: 2
-            },
-          })
-            // 用户确认分享后执行的回调函数
-        },
-        cancel: function () {
-            // 用户取消分享后执行的回调函数
-        }
-      });
+      wx.ready(function(){
+        
+        wx.showOptionMenu();
+        // 分享给朋友
+        wx.onMenuShareAppMessage({
+          title: shareConfig.title,
+          desc: shareConfig.desc,
+          link: shareConfig.link,
+          imgUrl: shareConfig.imgUrl,
+          success: function () {
+            $.ajax({
+              url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+              dataType: 'json',
+              data: {
+                invitation_code: getQueryStringArgs().invitation_code,
+                login_uid: galleryData.uid ? galleryData.uid : "",
+                tag: getQueryStringArgs().target,
+                platform: 2
+              },
+            })
+              // 用户确认分享后执行的回调函数
+          },
+          cancel: function () {
+              // 用户取消分享后执行的回调函数
+          }
+        });
 
-      // 分享到QQ
-      wx.onMenuShareQQ({
-        title: shareConfig.title,
-        desc: shareConfig.desc,
-        link: shareConfig.link,
-        imgUrl: shareConfig.imgUrl,
-        success: function () {
-          $.ajax({
-            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
-            dataType: 'json',
-            data: {
-              invitation_code: getQueryStringArgs().invitation_code,
-              login_uid: galleryData.uid ? galleryData.uid : "",
-              tag: getQueryStringArgs().target,
-              platform: 2
-            },
-          })
-           // 用户确认分享后执行的回调函数
-        },
-        cancel: function () {
-           // 用户取消分享后执行的回调函数
-        }
-      });
+        // 分享到朋友圈
+        wx.onMenuShareTimeline({
+          title: shareConfig.title,
+          link: shareConfig.link,
+          imgUrl: shareConfig.imgUrl,
+          success: function () {
+            $.ajax({
+              url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+              dataType: 'json',
+              data: {
+                invitation_code: getQueryStringArgs().invitation_code,
+                login_uid: galleryData.uid ? galleryData.uid : "",
+                tag: getQueryStringArgs().target,
+                platform: 2
+              },
+            })
+              // 用户确认分享后执行的回调函数
+          },
+          cancel: function () {
+              // 用户取消分享后执行的回调函数
+          }
+        });
 
-      // 分享到腾讯微博
-      wx.onMenuShareWeibo({
-        title: shareConfig.title,
-        desc: shareConfig.desc,
-        link: shareConfig.link,
-        imgUrl: shareConfig.imgUrl,
-        success: function () {
-          $.ajax({
-            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
-            dataType: 'json',
-            data: {
-              invitation_code: getQueryStringArgs().invitation_code,
-              login_uid: galleryData.uid ? galleryData.uid : "",
-              tag: getQueryStringArgs().target,
-              platform: 2
-            },
-          })
-           // 用户确认分享后执行的回调函数
-        },
-        cancel: function () {
-            // 用户取消分享后执行的回调函数
-        }
-      });
+        // 分享到QQ
+        wx.onMenuShareQQ({
+          title: shareConfig.title,
+          desc: shareConfig.desc,
+          link: shareConfig.link,
+          imgUrl: shareConfig.imgUrl,
+          success: function () {
+            $.ajax({
+              url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+              dataType: 'json',
+              data: {
+                invitation_code: getQueryStringArgs().invitation_code,
+                login_uid: galleryData.uid ? galleryData.uid : "",
+                tag: getQueryStringArgs().target,
+                platform: 2
+              },
+            })
+             // 用户确认分享后执行的回调函数
+          },
+          cancel: function () {
+             // 用户取消分享后执行的回调函数
+          }
+        });
 
-      // 分享到Q-zone
-      wx.onMenuShareQZone({
-        title: shareConfig.title,
-        desc: shareConfig.desc,
-        link: shareConfig.link,
-        imgUrl: shareConfig.imgUrl,
-        success: function () {
-          $.ajax({
-            url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
-            dataType: 'json',
-            data: {
-              invitation_code: getQueryStringArgs().invitation_code,
-              login_uid: galleryData.uid ? galleryData.uid : "",
-              tag: getQueryStringArgs().target,
-              platform: 2
-            },
-          })
-           // 用户确认分享后执行的回调函数
-        },
-        cancel: function () {
-            // 用户取消分享后执行的回调函数
-        }
-      });
+        // 分享到腾讯微博
+        wx.onMenuShareWeibo({
+          title: shareConfig.title,
+          desc: shareConfig.desc,
+          link: shareConfig.link,
+          imgUrl: shareConfig.imgUrl,
+          success: function () {
+            $.ajax({
+              url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+              dataType: 'json',
+              data: {
+                invitation_code: getQueryStringArgs().invitation_code,
+                login_uid: galleryData.uid ? galleryData.uid : "",
+                tag: getQueryStringArgs().target,
+                platform: 2
+              },
+            })
+             // 用户确认分享后执行的回调函数
+          },
+          cancel: function () {
+              // 用户取消分享后执行的回调函数
+          }
+        });
 
+        // 分享到Q-zone
+        wx.onMenuShareQZone({
+          title: shareConfig.title,
+          desc: shareConfig.desc,
+          link: shareConfig.link,
+          imgUrl: shareConfig.imgUrl,
+          success: function () {
+            $.ajax({
+              url: urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount',
+              dataType: 'json',
+              data: {
+                invitation_code: getQueryStringArgs().invitation_code,
+                login_uid: galleryData.uid ? galleryData.uid : "",
+                tag: getQueryStringArgs().target,
+                platform: 2
+              },
+            })
+             // 用户确认分享后执行的回调函数
+          },
+          cancel: function () {
+              // 用户取消分享后执行的回调函数
+          }
+        });
+
+
+      });  // 微信ready结束
 
       wx.error(function(res){
         // alert(res);
@@ -514,7 +570,10 @@ function getJsSdkData() {
   })
 }
 
-    
+//点击显示大头像
+// function showAuthorImg() {
+  
+// }
 
 
 // 获取相册渲染数据
@@ -534,14 +593,16 @@ function getGallery() {
         alert(JSON.stringify(d))
       }
 
-      if(environment.isWeixin) {
-        getJsSdkData();
-      }
-
       if(d.c == 403) {
-        alert('活动不存在')
+        alert('活动不存在');
       }else if(d.m === 'success') {
+        galleryData.invitationCode = d.p.invitation_code;  //pokola 20151211
+      	if(environment.isWeixin) {
+	        getJsSdkData();
+	      }
+
         memberList.creaternicname = d.p.member[0].n;
+        //alert(galleryData.invitationCode);
         console.log(urlConfig);
 
         var templateJSON = d.p.template.band;
@@ -651,11 +712,14 @@ function getGallery() {
         $('.gallery-authors-tip').html('<p>'+galleryData.memberlength+'</p>');  
         var galleryauthorsWidth = galleryData.memberlength*40 + 'px';
         $('.gallery-authors').css('max-width',galleryauthorsWidth);
+        // $('.gallery-author').on('click',function(){
+        //   showAuthorImg();
+        // });
 
         //alert(urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount');
         // 从sessionStorage中查看是否刚上传过的标记，有则给个提示，并删掉标记
         console.log(sessionStorage);
-        $(document.body).append('<div class="hint global-hint hint-dismissible"><button type="button" class="close"><span>×</span></button>你上传的图片已按拍摄时间顺序发布到相册<br>如果时间存在误差，请使用US应用进行编辑</div>')
+        $(document.body).append('<div class="hint global-hint hint-dismissible"><button type="button" class="close"><span>×</span></button>您上传的图片已按拍摄时间顺序发布到相册<br>如果时间存在误差，请使用US应用进行编辑</div>')
         if(sessionStorage['just-uploaded'] === "1") {
           sessionStorage.removeItem('just-uploaded');
           $('.global-hint').addClass('slide-in');
@@ -676,7 +740,7 @@ function getGallery() {
         initPhotoSwipeFromDOM('.photo-group-container');
 
         // 获取到uid时
-        if(galleryData.uid) uploadFile();
+        if(galleryData.uid) createMoment();
 
       } 
     }
@@ -708,6 +772,7 @@ function getUrlConfig() {
         urlConfig.upload_domain = 'app.himoca.com';
       }
 
+
       // 如果在微信中且得到code后，则触发 登录 和 获取微信配置信息
       if(environment.isWeixin && environment.isWeixinLogin) {
         $('.toolbar-bottom').removeClass('active');
@@ -720,7 +785,7 @@ function getUrlConfig() {
         $('.toolbar-invitation-code').addClass('active');
         getGallery();
 
-        if(!environment.isQq) {
+        if(environment.isQq) {
           if(environment.isIos) {
             location.href = downloadLink.microdownload
           }
@@ -745,7 +810,7 @@ function getUrlConfig() {
   });
 }
 
-// DOM 准备好了
+// DOM 准备好了  授权页后第一步执行
 $(function () {
 
   getUrlConfig();
