@@ -736,8 +736,9 @@ function getGallery() {
           $('img', v).attr('src', trueImgUrl);
         })
 
-        inviteOnloadTip();
-
+        if (environment.isWeixin && getQueryStringArgs().target === 'invite') {
+	        inviteOnloadTip();
+		}
         //poko
         $('.gallery-authors-tip').html('<p>'+galleryData.memberlength+'</p>');  
         var galleryauthorsWidth = galleryData.memberlength*40 + 'px';
