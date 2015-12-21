@@ -53,6 +53,7 @@ var galleryData = {
   title: '',
   cover: '',
   date: null,
+  openid: null,
   fixedTemplateIndex: [], // 最后一组模板特殊处理，
 }
 
@@ -111,16 +112,47 @@ function getRetinaImgSize(size) {
   }
 }
 
+
 // function redirectTo(argument) {
 //   // body...
 // }
 
 // 如果是微信环境且查询字符串的target是invite且还没获取code，则跳到授权页
-if (environment.isWeixin && getQueryStringArgs().target === 'invite' && !getQueryStringArgs().code) {
-  var redirectUrl = location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite';
-  location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUrl) + '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
-}
+// function getWeixinSnsapi() {
+  if (environment.isWeixin && getQueryStringArgs().target === 'invite' && !getQueryStringArgs().code) {
+    var redirectUrl = location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite';
+    // if ( $.cookie('loginMark') && $.cookie('loginMark') == getQueryStringArgs().invitation_code) {
+    //   location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUrl) + '&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
+    // }else {
+    location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUrl) + '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect';
+    // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUrl) + '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect';
+    // }
+  }
+// }
 
+function loginCheck() {
+  $.ajax({
+    url: urlProtocol + urlConfig.init_domain + '/Us/User/webLogin',
+    dataType: 'json',
+    data: {
+      code: getQueryStringArgs().code,
+      invitation_code: getQueryStringArgs().invitation_code,
+    },
+    success: function (d) {
+      if (d.p) {
+        galleryData.sessionKey = d.p.session_key;
+        galleryData.avatar = d.p.avatar;
+        galleryData.uid = d.p.uid;
+        galleryData.nickname = d.p.nickname;
+        //alert(JSON.stringify(d));
+        //alert(JSON.stringify(d.p));
+        getGallery();
+      } else {
+        location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUrl) + '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect';
+      }
+    }
+  })
+}
 
 // 获取微信用户信息
 function register() {
@@ -157,28 +189,13 @@ function register() {
       galleryData.avatar = d.avatar;
       galleryData.uid = d.uid;
       galleryData.nickname = d.nickname;
-
-      if(d.uid) getGallery();
+      //alert(location.href);
+      //$.cookie('loginMark', '111',{ expires: 1 });
+      //alert('1');
+      getGallery();
     }
   })
 }
-
-//邀请载入提示
-function inviteOnloadTip() {
-  var templateInviteOnloadTip = _.template($('#invite-onload-tip').text());
-  var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: $('.gallery-cover').offset().top - 20 + 'px'});
-  var $templateInviteOnloadTips = $(templateInviteOnloadTips);
-  var $modalBackdrop = $('<div class="modal-backdrop"></div>');
-  var inviteOnloadTipCoverTop = $('.gallery-cover').offset().top;
-  //alert(inviteOnloadTipCoverTop);
-  $templateInviteOnloadTips.addClass('show').appendTo('body');
-  $('.onloadtip-btn').on('click', function (e) {
-    e.preventDefault();
-    $(this).closest('.onloadtip').removeClass('show');
-    $modalBackdrop.removeClass('show');
-  })
-  $modalBackdrop.addClass('show').appendTo('body');
-};
 
 //上传锁定提示
 function activeLockTip() {
@@ -232,7 +249,6 @@ function createMoment() {
       console.log('createMoment', d);
       galleryData.momentId = d.p.moment_id;
       if (d.c == 403) {
-      	$('.upload-cover').css('display','none');
         $('.upload-file-container').html("上传照片").on('click',function(){
             activeLockTip();
         });
@@ -243,150 +259,141 @@ function createMoment() {
   })
 }
 
-var uploadTipCount = 0;
 //上传图片
 function uploadFile() {
   var pictureIdArray = [];
   var pictureIndex = 0;
-  
-  if (uploadTipCount == 0) {
-  	$('.upload-cover').on('click',function (e) {
-  		e.preventDefault();
-  		//alert('1');
-	    var templateInviteUploadTip = _.template($('#invite-upload-tip').text());
-	    var templateInviteUploadTips = templateInviteUploadTip();
-	    var $templateInviteUploadTips = $(templateInviteUploadTips);
-	    var $modalBackdrop = $('<div class="modal-backdrop"></div>');
-	    $templateInviteUploadTips.addClass('show').appendTo('body');
-	    $('.close').on('click', function (e) {
-	      e.preventDefault();
-	      $(this).closest('.uploadtip').removeClass('show');
-	      $modalBackdrop.removeClass('show');
-	    })
-	    $('.uploadtip-continue').on('click', function (e) {
-	      e.preventDefault();
-	      $(this).closest('.uploadtip').removeClass('show');
-	      $modalBackdrop.removeClass('show');
-	      $('#input-file').removeAttr("disabled");
-	      $('.upload-cover').css('display','none');
-	      uploadTipCount++;
-	  	  uploadFile();
-	    })
-	    $('.uploadtip-download').on('click', function (e) {
-	      e.preventDefault();
-	      $(this).closest('.uploadtip').removeClass('show');
-	      $modalBackdrop.removeClass('show');
-	      location.href = downloadLink.microdownload;
-	    })
-	    $modalBackdrop.addClass('show').appendTo('body');
-  	});
-  }else {
-  $('#input-file').click();
-  $('#input-file').fileupload({
-    url: urlProtocol + urlConfig.upload_domain + '/Us/Event/upload',
-    dataType: 'json',
-    // sequentialUploads: true,
-    // limitConcurrentUploads: true,
-    // multipart: ,
-    autoUpload: enableDesktopDebug ? false : true,
-    disableImageResize: /Android(?!.*Chrome)|Opera/.test(window.navigator && navigator.userAgent),  //是否可用调整图片大小
-    // imageMaxWidth: 1080,
-    // imageMaxHeight: 1080,
-    imageOrientation: true, // 采用exif中的方向
-    disableImageMetaDataSave: true, // imageOrientation旋转图片并没有更改exif中的方向，这样导致终端渲染图片时如果要依赖于图片的exif中的orientation，会渲染错误，disableImageMetaDataSave直接不保存exif信息
-    imageType: 'image/jpeg', // 转换格式
-    imageQuality: 0.5, // 图片质量
-  }).on('fileuploadadd', function (e, data) {
-    var formData = {},
-      exif,
-      options = {};
+  var uploadCount = 0;
+  // var verifyArray = [poko.jpg,image/jpeg,/tmp/phpCfhbix,0,1];
+  $('.upload-file-container').on("click",function(){
+    $.ajax({
+      url: urlProtocol + urlConfig.init_domain + '/Us/Event/CreateMoment',
+      dataType: 'json',
+      data: {
+        event_id: galleryData.eventId,
+        login_uid: galleryData.uid,
+        session_key: galleryData.sessionKey,
+        platform: 2
+        // shoot_time: '1449657800000',
+        // login_uid: galleryData.uid,
+        // moment_id: galleryData.momentId,
+        // event_id: galleryData.eventId,
+        // session_key: galleryData.sessionKey,
+        // file: verifyArray,
+        // size: '1x1'
+      },
+      success: function (d) {
+        if (d.c == 403 && uploadCount == 0) {
+          activeLockTip();
+        }else {
+          uploadCount++;
+          $('#input-file').fileupload({
+            url: urlProtocol + urlConfig.upload_domain + '/Us/Event/upload',
+            dataType: 'json',
+            // sequentialUploads: true,
+            // limitConcurrentUploads: true,
+            // multipart: ,
+            autoUpload: enableDesktopDebug ? false : true,
+            disableImageResize: /Android(?!.*Chrome)|Opera/.test(window.navigator && navigator.userAgent),  //是否可用调整图片大小
+            // imageMaxWidth: 1080,
+            // imageMaxHeight: 1080,
+            imageOrientation: true, // 采用exif中的方向
+            disableImageMetaDataSave: true, // imageOrientation旋转图片并没有更改exif中的方向，这样导致终端渲染图片时如果要依赖于图片的exif中的orientation，会渲染错误，disableImageMetaDataSave直接不保存exif信息
+            imageType: 'image/jpeg', // 转换格式
+            imageQuality: 0.5, // 图片质量
+          }).on('fileuploadadd', function (e, data) {
+            var formData = {},
+              exif,
+              options = {};
+            console.log(e);
+            $('.state').addClass('hide');
+            $('.state-upload').removeClass('hide');
 
-    console.log(e);
-    $('.state').addClass('hide');
-    $('.state-upload').removeClass('hide');
+            loadImage(
+              data.files[0],
+              function (img) {
 
-    loadImage(
-      data.files[0],
-      function (img) {
+                formData.login_uid = galleryData.uid;
+                formData.moment_id = galleryData.momentId;
+                formData.event_id = galleryData.eventId;
+                formData.session_key = galleryData.sessionKey;
+                formData.size = img.width + 'x' + img.height;
+                data.formData = formData;
+                console.log(data);
 
-        formData.login_uid = galleryData.uid;
-        formData.moment_id = galleryData.momentId;
-        formData.event_id = galleryData.eventId;
-        formData.session_key = galleryData.sessionKey;
-        formData.size = img.width + 'x' + img.height;
-        data.formData = formData;
-        console.log(data);
-
-        console.log(img);
-         
-      }, options);
+                console.log(img);
+                 
+              }, options);
 
 
-    loadImage.parseMetaData(
-      data.files[0],
-      function (exifData) {
-        console.log(exifData);
-        console.log(exifData.exif);
-        if(exifData.exif) {
-          exif = exifData.exif;
-          console.log(exifData.exif.getAll());
+            loadImage.parseMetaData(
+              data.files[0],
+              function (exifData) {
+                console.log(exifData);
+                console.log(exifData.exif);
+                if(exifData.exif) {
+                  exif = exifData.exif;
+                  console.log(exifData.exif.getAll());
 
-          options.orientation = exif.get('Orientation');
-          // exif中保存的源数据类似这样 "2015:10:27 11:05:37"，要转成时间戳
-          // console.log(moment("2015:10:27 11:05:37", 'YYYY:MM:DD HH:mm:ss').valueOf());
-          if(exifData.exif.get('DateTimeDigitized')) {
-            formData.shoot_time = moment(exifData.exif.get('DateTimeDigitized'), 'YYYY:MM:DD HH:mm:ss').valueOf();
-          } else if(exifData.exif.get('DateTime')) {
-            formData.shoot_time = moment(exifData.exif.get('DateTime'), 'YYYY:MM:DD HH:mm:ss').valueOf();
-          } else {
-            formData.shoot_time = data.originalFiles[0].lastModifiedDate.getTime();
-          }
-          console.log(formData.shoot_time);
+                  options.orientation = exif.get('Orientation');
+                  // exif中保存的源数据类似这样 "2015:10:27 11:05:37"，要转成时间戳
+                  // console.log(moment("2015:10:27 11:05:37", 'YYYY:MM:DD HH:mm:ss').valueOf());
+                  if(exifData.exif.get('DateTimeDigitized')) {
+                    formData.shoot_time = moment(exifData.exif.get('DateTimeDigitized'), 'YYYY:MM:DD HH:mm:ss').valueOf();
+                  } else if(exifData.exif.get('DateTime')) {
+                    formData.shoot_time = moment(exifData.exif.get('DateTime'), 'YYYY:MM:DD HH:mm:ss').valueOf();
+                  } else {
+                    formData.shoot_time = data.originalFiles[0].lastModifiedDate.getTime();
+                  }
+                  console.log(formData.shoot_time);
 
-        } else {
-          // 如果没有exif就用文件的lastModifiedDate
-          console.log(data.originalFiles[0].lastModifiedDate);
-          formData.shoot_time = data.originalFiles[0].lastModifiedDate.getTime();
-          console.log(formData.shoot_time);
+                } else {
+                  // 如果没有exif就用文件的lastModifiedDate
+                  console.log(data.originalFiles[0].lastModifiedDate);
+                  formData.shoot_time = data.originalFiles[0].lastModifiedDate.getTime();
+                  console.log(formData.shoot_time);
 
-        }
+                }
 
+              }
+            );
+
+           
+            // var totalFileNum = data.files.length;
+            // var $totalFile = $('.file-total');
+
+            // $totalFile.html(data.originalFiles.length);
+            // console.log(data);
+          }).on('fileuploadprogressall', function (e, data) {
+            // console.log(data.loaded + '/' + data.total);
+            // console.log(data);
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
+          }).on('fileuploadfail',function(){
+            $('.state-progress').hide();
+            $('.state-text').css({margin:"0 auto",color:"#f00"}).html("上传失败，请点击重试").on('click',function(){
+              location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
+            });
+          }).on('fileuploaddone', function (e, data) {
+            // alert(JSON.stringify(data.files[0].preview));
+            // $('.state-progress').hide();  //上传完成提示
+            // $('.state-text').css("margin","0 auto").html("上传完成！等待验证中……");
+            console.log('上传done', data);
+            // alert('上传完成')
+            pictureIndex++;   
+            // $('.toolbar-bottom .file-uploaded').html(pictureIndex);
+            pictureIdArray.push(data.result.p.picture_id);
+            // alert(JSON.stringify(data.result));
+            
+            console.log('picture_ids为' + data.result.p.picture_id, 'moment_id为' + galleryData.momentId, 'event_id' + galleryData.eventId);
+            if(pictureIndex === data.originalFiles.length) {
+              commitUpload(pictureIdArray.join(','));
+            }
+          })
+        }; //判断结束
       }
-    );
-
-   
-    // var totalFileNum = data.files.length;
-    // var $totalFile = $('.file-total');
-
-    // $totalFile.html(data.originalFiles.length);
-    // console.log(data);
-  }).on('fileuploadprogressall', function (e, data) {
-    // console.log(data.loaded + '/' + data.total);
-    // console.log(data);
-    var progress = parseInt(data.loaded / data.total * 100, 10);
-    $('.toolbar-bottom .progress-bar').css('width', progress + '%' );
-  }).on('fileuploadfail',function(){
-    $('.state-progress').hide();
-    $('.state-text').css({margin:"0 auto",color:"#f00"}).html("上传失败，请点击重试").on('click',function(){
-      location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
     });
-  }).on('fileuploaddone', function (e, data) {
-    // alert(JSON.stringify(data.files[0].preview));
-    // $('.state-progress').hide();  //上传完成提示
-    // $('.state-text').css("margin","0 auto").html("上传完成！等待验证中……");
-    console.log('上传done', data);
-    // alert('上传完成')
-    pictureIndex++;   
-    // $('.toolbar-bottom .file-uploaded').html(pictureIndex);
-    pictureIdArray.push(data.result.p.picture_id);
-    // alert(JSON.stringify(data.result));
-    
-    console.log('picture_ids为' + data.result.p.picture_id, 'moment_id为' + galleryData.momentId, 'event_id' + galleryData.eventId);
-    if(pictureIndex === data.originalFiles.length) {
-      commitUpload(pictureIdArray.join(','));
-    }
-  })
-  }
+  });
 }
 
 // 所有图片都上传完了要commit一下
@@ -458,7 +465,7 @@ function getJsSdkData() {
         timestamp: d.timestamp, // 必填，生成签名的时间戳
         nonceStr: d.noncestr, // 必填，生成签名的随机串
         signature: d.signature, // 必填，签名，见附录1
-        jsApiList: ['showOptionMenu', 'onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        jsApiList: ['showOptionMenu', 'onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone', 'chooseImage', 'uploadImage', 'downloadImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
       });
 
 
@@ -584,6 +591,77 @@ function getJsSdkData() {
           }
         });
 
+        // var images = {
+        //     localIds: [],
+        //     serverId: []
+        //   };
+        //   $('.toolbar-upload .wx-chooseImage').unbind('click').click(function (e) {
+        //     e.preventDefault();
+        //     //alert('true');
+        //     wx.chooseImage({
+        //       sizeType: 'original',
+        //       success: function (res) {
+        //         images.localIds = res.localIds;
+        //         //alert('已选择 ' + res.localIds.length + ' 张图片');
+        //         //alert(images.localIds);
+
+        //         var i = 0; 
+        //         var length = images.localIds.length;
+ 
+        //           var upload = function () {
+        //               wx.uploadImage({
+        //                   localId: images.localIds[i],
+        //                   success: function(res) {
+        //                       images.serverId.push(res.serverId);
+        //                       alert(images.serverId);
+        //                       //如果还有照片，继续上传
+        //                       i++;
+        //                       if (i < length) {
+        //                           upload();
+        //                       }
+        //                   },
+        //                   fail: function (res) {
+        //                     alert(JSON.stringify(res));
+        //                   }
+        //               });                    
+        //           };
+        //         upload();
+        //       },
+        //       cancel: function(){
+        //         // alert('未选择照片');
+        //       },
+        //       fail: function(res){
+        //         alert(JSON.stringify(res));
+        //       }
+        //     });
+        //   });
+
+        // $('.toolbar-upload .open-app').unbind('click').click(function (e) {
+        //   e.preventDefault();
+        //   if (images.serverId.length === 0) {
+        //     alert('请先使用 uploadImage 上传图片');
+        //     return;
+        //   }
+        //   var i = 0, length = images.serverId.length;
+        //   images.localIds = [];
+        //   function download() {
+        //     wx.downloadImage({
+        //       serverId: images.serverId[i],
+        //       success: function (res) {
+        //         i++;
+        //         alert(JSON.stringify(res));
+        //         alert('已下载：' + i + '/' + length);
+        //         images.localIds.push(res.localId);
+        //         $('.gallery-cover-inner img').attr('src',images.localIds[0]);
+        //         if (i < length) {
+        //           download();
+        //         }
+        //       }
+        //     });
+        //   }
+        //   download();
+        // });
+
 
       });  // 微信ready结束
 
@@ -622,7 +700,6 @@ function getGallery() {
       if(d.c == 403) {
         alert('活动不存在');
       }else if(d.m === 'success') {
-      	
         galleryData.invitationCode = d.p.invitation_code;  //pokola 20151211
       	if(environment.isWeixin) {
 	        getJsSdkData();
@@ -631,7 +708,6 @@ function getGallery() {
         memberList.creaternicname = d.p.member[0].n;
         //alert(galleryData.invitationCode);
         console.log(urlConfig);
-        
 
         var templateJSON = d.p.template.band;
         // 提取第一个特定数量的模块的索引
@@ -659,7 +735,7 @@ function getGallery() {
         galleryData.memberlength = d.p.member.length; //poko
 
         document.title = galleryData.title;
-        
+
 
         // console.log($templatePhotoGroupCompiled);
 
@@ -736,8 +812,6 @@ function getGallery() {
           $('img', v).attr('src', trueImgUrl);
         })
 
-        inviteOnloadTip();
-
         //poko
         $('.gallery-authors-tip').html('<p>'+galleryData.memberlength+'</p>');  
         var galleryauthorsWidth = galleryData.memberlength*40 + 'px';
@@ -804,12 +878,15 @@ function getUrlConfig() {
 
 
       // 如果在微信中且得到code后，则触发 登录 和 获取微信配置信息
-      if(environment.isWeixin && environment.isWeixinLogin) {
+      if(environment.isWeixin && environment.isWeixinLogin &&) {
         $('.toolbar-bottom').removeClass('active');
         $('.toolbar-upload').addClass('active');
         // 注册
         register();
-
+      // } else if(environment.isWeixin && environment.isWeixinLogin && $.cookie('loginMark') == getQueryStringArgs().invitation_code) {
+      //   $('.toolbar-bottom').removeClass('active');
+      //   $('.toolbar-upload').addClass('active');
+      //   loginCheck();
       } else if(!environment.isWeixin && getQueryStringArgs().target === 'invite') {
         $('.toolbar-bottom').removeClass('active');
         $('.toolbar-invitation-code').addClass('active');
@@ -845,7 +922,7 @@ $(function () {
 
   getUrlConfig();
 
-  // 微信下邀请 的 打开us （已换微下载）
+  //微信下邀请 的 打开us （已换微下载）
   $('.toolbar-upload .open-app').on('click', function (e) {
     e.preventDefault();
     location.href = downloadLink.microdownload;

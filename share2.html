@@ -6,7 +6,7 @@
   <title>活动相册</title>
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta itemprop="name" content="">
-  <meta name="description" itemprop="description" content="Us - 非凡的活动记录者">
+  <meta name="description" itemprop="description" content="US - 非凡的活动记录者">
   <meta itemprop="image" content="">
   <meta name="format-detection" content="telephone=no">
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -27,10 +27,10 @@
   <script src="bower_components/blueimp-file-upload/js/jquery.fileupload.js"></script>
   <script src="bower_components/blueimp-file-upload/js/jquery.fileupload-process.js"></script>
   <script src="bower_components/blueimp-file-upload/js/jquery.fileupload-image.js"></script>
-  <script src="js/jquery.cookie.js"></script>
+  
   <script src="bower_components/moment/min/moment.min.js"></script>
 
-  <script src="js/gallery-layout.js?2015121301"></script>
+  <script src="js/gallery-layout2.js?2015121501"></script>
 
   <script type="text/template" id="template-main">
     <% var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/' %>
@@ -113,11 +113,11 @@
       <button type="button" class="close"><span>×</span></button>
       <div class="modal-body">
         <p>长按复制下方邀请码然后
-        <br>打开Us即可上传活动照片</p>
+        <br>打开US即可上传活动照片</p>
         <div class="invitation-code">us.<%= invitationCode %></div>
       </div>
       <div class="modal-footer">
-        <a class="invitationbtn btn-block" href="mcus://hi">打开Us</a>
+        <a class="invitationbtn btn-block" href="mcus://hi">打开US</a>
       </div>
     </div>
   </script>
@@ -133,38 +133,10 @@
       </div>
     </div>
   </script>
-
-  <script type="text/template" id="invite-onload-tip">
-    <div class="onloadtip inviteonload-tip" style="top: <%= inviteOnloadTipCoverTop %>">
-      <div class="onloadtip-body">
-        <div class="onloadtip-head"></div>
-        <div class="onloadtip-text">
-          <p>本次活动所有照片已永久保存在您的Us账号中
-        <br>使用Us打开可以随时随地查看、编辑活动照片</p>
-        </div>
-      </div>
-      <div class="onloadtip-btn">知道了</div>
-    </div>
-  </script>
-
-  <script type="text/template" id="invite-upload-tip">
-    <div class="uploadtip inviteupload-tip">
-      <button type="button" class="close"><span>×</span></button>
-      <div class="uploadtip-body">
-        <p>在微信中上传照片可能会造成上传失败或无法获
-        <br>取照片拍照时间等问题，建议您使用Us应用上传</p>
-        <div class="uploadtip-box">
-          <div class="uploadtip-continue">继续上传</div>
-          <div class="uploadtip-download">下载Us应用</div>
-        </div>
-      </div>
-    </div>
-  </script>
-
 </head>
 
 <body class="with-toolbar-bottom">
-<div style="width:0;height:0;overflow:hidden;">Us - 非凡的知动记录者</div>
+<div style="width:0;height:0;overflow:hidden;">US - 非凡的知动记录者</div>
 
   <div id="skrollr-body" class="page-wrapper">
 
@@ -182,12 +154,10 @@
 <!-- 适用于邀请且可以辨识用户的环境，直接上传文件，目前就微信 -->
 <div class="toolbar-bottom toolbar-upload">
   <div class="state state-normal">
-    <a class="open-app" href="javascript:;">使用Us打开</a>
-    <!-- <a class="wx-chooseImage" href="javascript:;">上传照片</a> -->
+    <a class="open-app" href="#">使用us打开</a>
     <label class="upload-file-container" for="input-file">上传照片
-      <input type="file" name="file" id="input-file" accept="image/*" disabled multiple>
+      <input type="file" name="file" id="input-file" accept="image/*" multiple>
     </label>
-    <a class="upload-cover" href="javascript:;"></a>
   </div>
   <div class="state state-upload hide">
     <div class="state-text">上传中</div>
@@ -196,8 +166,6 @@
     </div>
   </div>
 </div>
-
-
 
 <!-- 适用于邀请但没有用户关联，弹出邀请码，复制，目前非微信环境 -->
 <div class="toolbar-bottom toolbar-invitation-code">
@@ -215,9 +183,9 @@
   <a class="download-container" href="#">
     <div class="logn-and-slogan">
       <img class="logo" src="images/icon.png" srcset="images/icon@2x.png 2x" alt="US logo" width="36" height="36">
-      <span class="slogan">Us 非凡的活动记录者<br><span class="secondly-title">If not now, when? If not us, who?</span></span>
+      <span class="slogan">US 非凡的活动记录者<br><span class="secondly-title">If not now, when? If not us, who?</span></span>
     </div>
-    <div class="download-btn">下载Us</div>
+    <div class="download-btn">下载US</div>
   </a>
 </div>
 
