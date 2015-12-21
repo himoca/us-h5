@@ -863,17 +863,16 @@ $(function () {
       //   $(this).removeClass('show');
       // });
         location.href = downloadLink.microdownload;
-    } else { // 非微信下
+    } else if (environment.isWeibo) { // 微博下
+	    $('.guide-to-open-in-browser').addClass('show').on('click', function () {
+	      $(this).removeClass('show');
+	    });
+    }else { // 非微信下
       if(environment.isIos) {
         location.href = downloadLink.microdownload;
       }
       if(environment.isAndroid) {
         location.href = downloadLink.microdownload;
-      }
-      if(environment.isWeibo) {
-        $('.guide-to-open-in-browser').addClass('show').on('click', function () {
-          $(this).removeClass('show');
-        });
       }
     } 
   })
