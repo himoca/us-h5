@@ -1292,6 +1292,7 @@ body.with-toolbar-bottom {
   right: 24px; 
   top: 10px; 
   bottom: 10px;
+  text-align: center;
   display:box;
   display: -webkit-box;
   display: -moz-box;
