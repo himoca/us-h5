@@ -166,10 +166,14 @@ function register() {
 //邀请载入提示
 function inviteOnloadTip() {
   var templateInviteOnloadTip = _.template($('#invite-onload-tip').text());
-  var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: $('.gallery-cover').offset().top - 20 + 'px'});
+  if (parseInt(window.screen.height) <= 480) {
+    var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: '120px'});
+  }else {
+    var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: $('.gallery-cover').offset().top - 20 + 'px'});
+  }
   var $templateInviteOnloadTips = $(templateInviteOnloadTips);
   var $modalBackdrop = $('<div class="modal-backdrop"></div>');
-  var inviteOnloadTipCoverTop = $('.gallery-cover').offset().top;
+  //var inviteOnloadTipCoverTop = $('.gallery-cover').offset().top;
   //alert(inviteOnloadTipCoverTop);
   $templateInviteOnloadTips.addClass('show').appendTo('body');
   $('.onloadtip-btn').on('click', function (e) {
