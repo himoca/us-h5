@@ -2,312 +2,406 @@
 <html lang="zh-cmn-Hans">
 
 <head>
-  <meta charset="UTF-8">
-  <title>活动相册</title>
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta itemprop="name" content="">
-  <meta name="description" itemprop="description" content="Us - 非凡的活动记录者">
-  <meta itemprop="image" content="">
-  <meta name="format-detection" content="telephone=no">
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
-  <script src="js/hide-share.js"></script>
-  <script src="bower_components/underscore/underscore-min.js"></script>
-  <script src="bower_components/jquery_lazyload/jquery.lazyload.js"></script>
-  <link rel="stylesheet" href="bower_components/photoswipe/dist/photoswipe.css">
-  <link rel="stylesheet" href="bower_components/photoswipe/dist/default-skin/default-skin.css">
-  <link rel="stylesheet" href="css/share.css">
-  <script src="bower_components/photoswipe/dist/photoswipe.min.js"></script>
-  <script src="bower_components/photoswipe/dist/photoswipe-ui-default.min.js"></script>
-  <script src="js/photoswipe-custom.js"></script>
-  <script src="bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>
-  <script src="bower_components/blueimp-load-image/js/load-image.all.min.js"></script>
-  <script src="bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.min.js"></script>
-  <script src="bower_components/blueimp-file-upload/js/jquery.iframe-transport.js"></script>
-  <script src="bower_components/blueimp-file-upload/js/jquery.fileupload.js"></script>
-  <script src="bower_components/blueimp-file-upload/js/jquery.fileupload-process.js"></script>
-  <script src="bower_components/blueimp-file-upload/js/jquery.fileupload-image.js"></script>
-  <script src="js/jquery.cookie.js"></script>
-  <script src="bower_components/moment/min/moment.min.js"></script>
+	<meta charset="UTF-8">
+	<title>活动相册</title>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta itemprop="name" content="">
+	<meta name="description" itemprop="description" content="Us - 非凡的活动记录者">
+	<meta itemprop="image" content="">
+	<meta name="format-detection" content="telephone=no">
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script src="js/hide-share.js"></script>
+	<script src="bower_components/underscore/underscore-min.js"></script>
+	<script src="bower_components/jquery_lazyload/jquery.lazyload.js"></script>
+	<link rel="stylesheet" href="bower_components/photoswipe/dist/photoswipe.css">
+	<link rel="stylesheet" href="bower_components/photoswipe/dist/default-skin/default-skin.css">
+	<link rel="stylesheet" href="css/share.css">
+	<script src="bower_components/photoswipe/dist/photoswipe2.js"></script>
+	<script src="bower_components/photoswipe/dist/photoswipe-ui-default.min.js"></script>
+	<script src="js/photoswipe-custom.js"></script>
+	<script src="bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>
+	<script src="bower_components/blueimp-load-image/js/load-image.all.min.js"></script>
+	<script src="bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.min.js"></script>
+	<script src="bower_components/blueimp-file-upload/js/jquery.iframe-transport.js"></script>
+	<script src="bower_components/blueimp-file-upload/js/jquery.fileupload.js"></script>
+	<script src="bower_components/blueimp-file-upload/js/jquery.fileupload-process.js"></script>
+	<script src="bower_components/blueimp-file-upload/js/jquery.fileupload-image.js"></script>
+	<script src="js/jquery.cookie.js"></script>
+	<script src="js/jquery.nicescroll.min.js"></script>
+	<script src="bower_components/moment/min/moment.min.js"></script>
 
-  <script src="js/gallery-layout.js?2015121301"></script>
+	<script src="js/gallery-layout.js?2016010401"></script>
 
-  <script type="text/template" id="template-main">
-    <% var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/' %>
-    <div class="gallery-header">
-      <% var startDate = new Date(parseInt(start_time)), startDateMonth = startDate.getMonth() + 1, startDateYear = startDate.getFullYear(), startDateDay = startDate.getDate()%>
-      <p class="gallery-date"><%= startDateMonth + '.' + startDateDay + ' ' + startDateYear %></p>
-      <h1 class="gallery-title"><%= name %></h1>
-      <% var photoFile = cover_page, photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2], photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1]; %>
-      <div class="gallery-cover">
-        <div class="gallery-cover-inner">
-          <img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + '.' + photoFileExt %>" alt="">
-        </div>
-      </div>
-      <div class="gallery-authors">
-        <div class="gallery-authors-inner">
-          <% if(member.length > 0) { _.each(member, function(avatar) { %>
-            <div class="gallery-author">
-              <% var ext = avatar.a.match(/(.*)\.(.*$)/)[2], fileDirAndName = avatar.a.match(/(.*)\.(.*$)/)[1]; %>
-              <img src="<%= pictureBaseUrl + fileDirAndName + '_80x80' + '.' + ext %>" width="40" height="40">
-            </div>
-          <% })} %>
-        </div>
-        <span class="gallery-authors-tip"></span>
-      </div>
-    </div>
+	<script type="text/template" id="template-main">
+		<% var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/' %>
+		<div class="gallery-header">
+			<% var startDate = new Date(parseInt(start_time)), startDateMonth = startDate.getMonth() + 1, startDateYear = startDate.getFullYear(), startDateDay = startDate.getDate()%>
+			<p class="gallery-date"><%= startDateMonth + '.' + startDateDay + ' ' + startDateYear %></p>
+			<h1 class="gallery-title"><%= name %></h1>
+			<% var photoFile = cover_page, photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2], photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1]; %>
+			<div class="gallery-cover">
+				<div class="gallery-cover-inner">
+					<img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + '.' + photoFileExt %>" alt="">
+				</div>
+			</div>
+			<div class="gallery-authors">
+				<div class="gallery-authors-inner">
+					<% if(member.length > 0) { _.each(member, function(avatar) { %>
+					<div class="gallery-author">
+						<% var ext = avatar.a.match(/(.*)\.(.*$)/)[2], fileDirAndName = avatar.a.match(/(.*)\.(.*$)/)[1]; %>
+						<img src="<%= pictureBaseUrl + fileDirAndName + '_80x80' + '.' + ext %>" width="40" height="40">
+					</div>
+					<% })} %>
+				</div>
+				<span class="gallery-authors-tip"></span>
+			</div>
+		</div>
 
-    <div class="photo-group-container" data-width="<%= template.width %>">
-    <% var pictureIndex = 0, pictureLength = pictures.length; console.log('数据中的图片数' + pictureLength) %>
-    <% if(typeof template.band !== 'undefined') { %>
-      <% photoLoop: for(var photoGroupIndex = 0, photoGroup = template.band, photoGroupLength = photoGroup.length; photoGroupIndex < photoGroupLength;photoGroupIndex++) { %>
-      <% if(pictureLength === 0) break; %>
+		<div class="photo-group-container" data-width="<%= template.width %>">
+			<% var pictureIndex = 0, pictureLength = pictures.length, p_mark = '', currentPhotoGroup; console.log('数据中的图片数' + pictureLength) %>
+			<% if(typeof template.band !== 'undefined') { %>
+			<% photoLoop: for(var photoGroupIndex = 0, photoGroup = template.band, photoGroupLength = photoGroup.length; photoGroupIndex < photoGroupLength;photoGroupIndex++) { %>
+			<% if(pictureLength === 0) break; %>
 
-      <% if((pictureLength - pictureIndex) < photoGroup[photoGroupIndex].rect.length) { photoGroupIndex = galleryData.fixedTemplateIndex[pictureLength - pictureIndex - 1] }%>
+			<% if((pictureLength - pictureIndex) >= photoGroup[photoGroupIndex].rect.length && photoGroup[photoGroupIndex].rect.length > 1) { %>
+			<% var p_bandLength = photoGroup[photoGroupIndex].rect.length; %>
+			<% for(var p_pickUpPic = pictureIndex; p_pickUpPic < pictureIndex + p_bandLength; p_pickUpPic++ ) {%>
+			<% if (pictures[p_pickUpPic].content !== '') { %>
+			<% if (p_pickUpPic - pictureIndex > 0) { %>
+			<% var p_bandSpecial = p_pickUpPic - pictureIndex; %>
+			<% var p_bandSpecNum = galleryData.fixedTemplateIndex[p_bandSpecial - 1]; %>
+			<% if(p_bandSpecNum == 0) {p_bandSpecNum++;} %>
+			<% currentPhotoGroup = photoGroup[p_bandSpecNum]; %>
+			<% p_mark = 'pokola'; %>
+			<% photoGroupIndex--; %>
+			<% break; %>
+			<% } else if(p_pickUpPic - pictureIndex == 0) {%>
+			<% currentPhotoGroup = photoGroup[1]; %>
+			<% p_mark = 'pokola'; %>
+			<% photoGroupIndex--; %>
+			<% break; %>
+			<% } %>
+			<% } %>
+			<% } %>
+			<% }; %>
 
-      <% var currentPhotoGroup = photoGroup[photoGroupIndex], width = template.width, headerHeight = currentPhotoGroup.textbox[0].height; %>
-      <div class="photo-group" data-height="<%= currentPhotoGroup.height %>" data-header-height="<%= headerHeight %>" style="padding-bottom: <%= (currentPhotoGroup.height - headerHeight)/width*100 + '%' %>">
-      <% if(typeof currentPhotoGroup.textbox !== 'undefined') { _.each(currentPhotoGroup.textbox, function(textbox) { %>
+			<% if((pictureLength - pictureIndex) < photoGroup[photoGroupIndex].rect.length) { %>
+			<% for(var p_pickUpPic = pictureIndex; p_pickUpPic < pictureLength; p_pickUpPic++ ) {%>
+			<% if (pictures[p_pickUpPic].content !== '') { %>
+			<% if (p_pickUpPic - pictureIndex > 0) { %>
+			<% var p_bandSpecial = p_pickUpPic - pictureIndex; %>
+			<% var p_bandSpecNum = galleryData.fixedTemplateIndex[p_bandSpecial - 1]; %>
+			<% if(p_bandSpecNum == 0) {p_bandSpecNum++;} %>
+			<% currentPhotoGroup = photoGroup[p_bandSpecNum]; %>
+			<% p_mark = 'pokola'; %>
+			<% photoGroupIndex--; %>
+			<% break; %>
+			<% } else if(p_pickUpPic - pictureIndex == 0) {%>
+			<% currentPhotoGroup = photoGroup[1]; %>
+			<% p_mark = 'pokola'; %>
+			<% photoGroupIndex--; %>
+			<% break; %>
+			<% } %>
+			<% } %>
+			<% } %>
+			<% if(p_mark !== 'pokola'){ %>
+			<% photoGroupIndex = galleryData.fixedTemplateIndex[pictureLength - pictureIndex - 1] %>
+			<% } %>
+			<% } %>
 
-        <% if(textbox.id === 'header') { %>
-          <% if(galleryConfig.header) { %>
-          <div class="photo-group-header" style="left:<%= textbox.x/width*100 + '%' %>;top:<%= textbox.y/(currentPhotoGroup.height - headerHeight)*100 + '%' %>;width:<%= textbox.width/width*100 + '%' %>;height:<%= textbox.height/(currentPhotoGroup.height - headerHeight)*100 + '%' %>;">
-          </div>
-          <% } %>
-        <% } %>
-        <% if(textbox.id === 'footer') { %>
-        <div class="photo-group-footer" data-x="<%= textbox.x %>" data-y="<%= textbox.y %>" data-width="<%= textbox.width %>" data-height="<%= textbox.height %>" style="left:<%= textbox.x/width*100 + '%' %>;width:<%= textbox.width/width*100 + '%' %>;padding-bottom:<%= textbox.height/textbox.width*100 + '%' %>;">
-          <div class="photo-author">
-            <span class="author-label"></span>
-            <span class="author-name-group"></span>
-          </div>
-          <div class="photo-description"></div>
-        </div>
-        <% } %>
-      <% })} %>
+			<% if(p_mark !== 'pokola'){ %>
+			<% currentPhotoGroup = photoGroup[photoGroupIndex]; %>
+			<% }else { p_mark = '';} %>
 
-      <% for(var photoItemIndex = 0, photoItemLength = currentPhotoGroup.rect.length; photoItemIndex < photoItemLength; photoItemIndex++, pictureIndex++) { %>
-        <% var photoItem = currentPhotoGroup.rect[photoItemIndex], currentPicture = pictures[pictureIndex]; %>
-        <% var photoFile = currentPicture.object_id, photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2], photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1]; %>
-        <% var avatarExt = currentPicture.avatar.match(/(.*)\.(.*$)/)[2], avatarDirAndName = currentPicture.avatar.match(/(.*)\.(.*$)/)[1]; %>
-        <div class="photo-item" data-description="<%= currentPicture.content %>" data-author="<%= currentPicture.nickname %>" data-avatar="<%= pictureBaseUrl + avatarDirAndName + '_60x60' + '.' + avatarExt %>" data-shoot-time="<%= currentPicture.shoot_time %>" data-x="<%= photoItem.x %>" data-y="<%= photoItem.y %>" data-width="<%= photoItem.width %>" data-height="<%= photoItem.height %>" style="left:<%= photoItem.x/width*100 + '%' %>;top:<%= (photoItem.y - headerHeight)/(currentPhotoGroup.height - headerHeight)*100 + '%' %>;width:<%= photoItem.width/width*100 + '%' %>;">
-          <div class="photo-item-inner">
-            <a class="photo-item-wrapper" href="<%= pictureBaseUrl + photoFileDirAndName + (galleryConfig.filterType > 0 ?  ('_' + galleryConfig.filterType) : '') + '.' + photoFileExt %>" data-size="<%= currentPicture.size %>" style="padding-bottom:<%= photoItem.height/photoItem.width*100 + '%' %>;">
-              <img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + (photoItem.filter ?  ('_' + photoItem.filter) : '') + '_50q.' + photoFileExt %>" alt="">
-            </a>
-          </div>
-        </div>
-        <% if(pictureIndex === pictureLength - 1) break photoLoop; %>
-      <% } %>
+      <% if(currentPhotoGroup.rect.length > 1) { %>
+      <% p_imageorimages = 'images by'; %>
+      <% }else { p_imageorimages = 'image by';} %>
+      
+			<% var width = template.width, headerHeight = currentPhotoGroup.textbox[0].height; %>
+			<div class="photo-group" data-height="<%= currentPhotoGroup.height %>" data-header-height="<%= headerHeight %>" style="padding-bottom: <%= (currentPhotoGroup.height - headerHeight)/width*100 + '%' %>">
+				<% if(typeof currentPhotoGroup.textbox !== 'undefined') { _.each(currentPhotoGroup.textbox, function(textbox) { %>
 
-    </div>
-    <% if(photoGroupIndex === photoGroupLength - 1) photoGroupIndex = 0; %>
-    <% }} %>
-    </div>
-    <div class="gallery-footer">
-      <div class="gallery-footer-text">THE END</div>
-    </div>
-  </script>
-  <script type="text/template" id="template-invitation-code">
-    <div class="modal modal-invitation-code">
-      <button type="button" class="close"><span>×</span></button>
-      <div class="modal-body">
-        <p>长按复制下方邀请码然后
-        <br>打开Us即可上传活动照片</p>
-        <div class="invitation-code">us.<%= invitationCode %></div>
-      </div>
-      <div class="modal-footer">
-        <a class="invitationbtn btn-block" href="mcus://hi">打开Us</a>
-      </div>
-    </div>
-  </script>
+				<% if(textbox.id === 'header') { %>
+				<% if(galleryConfig.header) { %>
+				<div class="photo-group-header" style="left:<%= textbox.x/width*100 + '%' %>;top:<%= textbox.y/(currentPhotoGroup.height - headerHeight)*100 + '%' %>;width:<%= textbox.width/width*100 + '%' %>;height:<%= textbox.height/(currentPhotoGroup.height - headerHeight)*100 + '%' %>;">
+				</div>
+				<% } %>
+				<% } %>
+				<% if(textbox.id === 'footer') { %>
+				<div class="photo-group-footer" data-x="<%= textbox.x %>" data-y="<%= textbox.y %>" data-width="<%= textbox.width %>" data-height="<%= textbox.height %>" style="left:<%= textbox.x/width*100 + '%' %>;width:<%= textbox.width/width*100 + '%' %>;padding-bottom:<%= textbox.height/textbox.width*100 + '%' %>;">
+					<div class="photo-author">
+						<span class="author-label">
+              <%= p_imageorimages %>
+            </span>
+						<span class="author-name-group"></span>
+					</div>
+					<div class="photo-description"></div>
+				</div>
+				<% } %>
+				<% })} %>
 
-  <script type="text/template" id="template-activelocked-tip">
-    <div class="locktip activelocked-tip">
-      <div class="locktip-body">
-        <p>该活动已锁定，暂时无法上传照片，请联系
-        <br>活动创建者 <span><%= locktipnicname %></span> 进行解锁</p>
-      </div>
-      <div class="locktip-footer">
-        <a class="locktipbtn btn-locktip" href="javascript:;">确定</a>
-      </div>
-    </div>
-  </script>
+				<% for(var photoItemIndex = 0, photoItemLength = currentPhotoGroup.rect.length; photoItemIndex < photoItemLength; photoItemIndex++, pictureIndex++) { %>
+				<% var photoItem = currentPhotoGroup.rect[photoItemIndex], currentPicture = pictures[pictureIndex]; %>
+				<% var photoFile = currentPicture.object_id, photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2], photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1]; %>
+				<% var avatarExt = currentPicture.avatar.match(/(.*)\.(.*$)/)[2], avatarDirAndName = currentPicture.avatar.match(/(.*)\.(.*$)/)[1]; %>
+				<div class="photo-item" data-description="<%= currentPicture.content %>" data-author="<%= currentPicture.nickname %>" data-avatar="<%= pictureBaseUrl + avatarDirAndName + '_60x60' + '.' + avatarExt %>" data-shoot-time="<%= currentPicture.shoot_time %>" data-x="<%= photoItem.x %>" data-y="<%= photoItem.y %>" data-width="<%= photoItem.width %>" data-height="<%= photoItem.height %>" data-likecount="<%= currentPicture.like_count %>" data-commentcount="<%= currentPicture.comment_count %>" style="left:<%= photoItem.x/width*100 + '%' %>;top:<%= (photoItem.y - headerHeight)/(currentPhotoGroup.height - headerHeight)*100 + '%' %>;width:<%= photoItem.width/width*100 + '%' %>;">
+					<div class="photo-item-inner">
+						<a class="photo-item-wrapper" href="<%= pictureBaseUrl + photoFileDirAndName + (galleryConfig.filterType > 0 ?  ('_' + galleryConfig.filterType) : '') + '.' + photoFileExt %>" data-size="<%= currentPicture.size %>" style="padding-bottom:<%= photoItem.height/photoItem.width*100 + '%' %>;">
+							<img data-original="<%= pictureBaseUrl + photoFileDirAndName + '_replaceWidthxreplaceHeight' + (photoItem.filter ?  ('_' + photoItem.filter) : '') + '_50q.' + photoFileExt %>" alt="">
+						</a>
+					</div>
+				</div>
+				<% if(pictureIndex === pictureLength - 1) break photoLoop; %>
+				<% } %>
 
-  <script type="text/template" id="invite-onload-tip">
-    <div class="onloadtip inviteonload-tip" style="top: <%= inviteOnloadTipCoverTop %>">
-      <div class="onloadtip-body">
-        <div class="onloadtip-head"></div>
-        <div class="onloadtip-text">
-          <p>本次活动所有照片已永久保存在您的Us账号中
-        <br>使用Us打开可以随时随地查看、编辑活动照片</p>
-        </div>
-      </div>
-      <div class="onloadtip-btn">知道了</div>
-    </div>
-  </script>
+			</div>
+			<% if(photoGroupIndex === photoGroupLength - 1) photoGroupIndex = 0; %>
+			<% }} %>
+		</div>
+		<div class="gallery-footer">
+			<div class="gallery-footer-text">THE END</div>
+		</div>
+	</script>
+	<script type="text/template" id="template-invitation-code">
+		<div class="modal modal-invitation-code">
+			<button type="button" class="close"><span>×</span></button>
+			<div class="modal-body">
+				<p>长按复制下方邀请码然后
+					<br>打开Us即可上传活动照片</p>
+				<div class="invitation-code">us.<%= invitationCode %></div>
+			</div>
+			<div class="modal-footer">
+				<a class="invitationbtn btn-block" href="mcus://hi">打开Us</a>
+			</div>
+		</div>
+	</script>
 
-  <script type="text/template" id="invite-upload-tip">
-    <div class="uploadtip inviteupload-tip">
-      <button type="button" class="close"><span>×</span></button>
-      <div class="uploadtip-body">
-        <p>在微信中上传照片可能会造成上传失败或无法获
-        <br>取照片拍照时间等问题，建议您使用Us应用上传</p>
-        <div class="uploadtip-box">
-          <div class="uploadtip-continue">继续上传</div>
-          <div class="uploadtip-download">下载Us应用</div>
-        </div>
-      </div>
-    </div>
-  </script>
+	<script type="text/template" id="template-activelocked-tip">
+		<div class="locktip activelocked-tip">
+			<div class="locktip-body">
+				<p>该活动已锁定，暂时无法上传照片，请联系
+					<br>活动创建者 <span><%= locktipnicname %></span> 进行解锁</p>
+			</div>
+			<div class="locktip-footer">
+				<a class="locktipbtn btn-locktip" href="javascript:;">确定</a>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/template" id="invite-onload-tip">
+		<div class="onloadtip inviteonload-tip" style="top: <%= inviteOnloadTipCoverTop %>">
+			<div class="onloadtip-body">
+				<div class="onloadtip-head"></div>
+				<div class="onloadtip-text">
+					<p>本次活动照片已永久保存在您的Us账号中
+						<br>使用Us打开可以随时随地查看、编辑活动照片</p>
+				</div>
+			</div>
+			<div class="onloadtip-btn"><div class="onloadtip-btnarea" href="javascript:;"></div>知道了</div>
+		</div>
+	</script>
+
+	<script type="text/template" id="invite-upload-tip">
+		<div class="uploadtip inviteupload-tip">
+			<button type="button" class="close"><span>×</span></button>
+			<div class="uploadtip-body">
+				<p>在微信中上传照片可能会造成上传失败或无法获
+					<br>取照片拍照时间等问题，建议您使用Us应用上传</p>
+				<div class="uploadtip-box">
+					<div class="uploadtip-continue">继续上传</div>
+					<div class="uploadtip-download">下载Us应用</div>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/template" id="author-big-img">
+		<div class="bigimg-body">
+			<div class="bigimg-src">
+				<img src="http://uspic-10006628.file.myqcloud.com/profile/avatar/default_250x250.jpg" width="250" height="250">
+			</div>
+			<div class="bigimg-nameandsex">
+				<p></p>
+			</div>
+			<span></span>
+			<div class="bigimg-commonevent">
+				<p></p>
+			</div>
+		</div>
+	</script>
 
 </head>
 
 <body class="with-toolbar-bottom">
 <div style="width:0;height:0;overflow:hidden;">Us - 非凡的知动记录者</div>
 
-  <div id="skrollr-body" class="page-wrapper">
+<div id="skrollr-body" class="page-wrapper">
 
 
-    <div id="main-container"></div>
+	<div id="main-container"></div>
 
-  </div>
+</div>
 
-  <!-- <div class="hint global-hint hint-dismissible">
-    <button type="button" class="close"><span>×</span></button>
-    你上传的图片已按拍摄时间顺序发布到相册
-    <br>如果时间存在误差，请使用US应用进行编辑
+<!-- <div class="hint global-hint hint-dismissible">
+	<button type="button" class="close"><span>×</span></button>
+	你上传的图片已按拍摄时间顺序发布到相册
+	<br>如果时间存在误差，请使用US应用进行编辑
   </div> -->
 
 <!-- 适用于邀请且可以辨识用户的环境，直接上传文件，目前就微信 -->
 <div class="toolbar-bottom toolbar-upload">
-  <div class="state state-normal">
-    <a class="open-app" href="javascript:;">使用Us打开</a>
-    <!-- <a class="wx-chooseImage" href="javascript:;">上传照片</a> -->
-    <label class="upload-file-container" for="input-file">上传照片
-      <input type="file" name="file" id="input-file" accept="image/*" disabled multiple>
-    </label>
-    <a class="upload-cover" href="javascript:;"></a>
-  </div>
-  <div class="state state-upload hide">
-    <div class="state-text">上传中</div>
-    <div class="progress state-progress">
-      <div class="progress-bar" style="width: 0%;"></div>
-    </div>
-  </div>
+	<div class="state state-normal">
+		<a class="open-app" href="javascript:;">使用Us打开</a>
+		<span class="upload-progress"></span>
+		<a class="wx-chooseImage" href="javascript:;">上传照片</a>
+		<label class="upload-file-container" for="input-file">上传照片
+		  <input type="file" name="file" id="input-file" accept="image/*" disabled multiple>
+		</label>
+		<a class="upload-cover" href="javascript:;"></a>
+	</div>
+	<div class="state state-upload hide">
+		<div class="state-text">上传中</div>
+		<div class="progress state-progress">
+			<div class="progress-bar" style="width: 0%;"></div>
+		</div>
+	</div>
 </div>
 
 
 
 <!-- 适用于邀请但没有用户关联，弹出邀请码，复制，目前非微信环境 -->
 <div class="toolbar-bottom toolbar-invitation-code">
-  <a href="#">上传照片</a>
+	<a href="#">上传照片</a>
 </div>
 
 <!-- 上传失败时提示重试，点击后刷新页面 -->
 <div class="uploadfail-bottom">
-  <a href="#">上传失败，请点击重试</a>
+	<a href="#">上传失败，请点击重试</a>
 </div>
 
 
 <!-- 适用于分享，下载app按扭在微信环境下特殊处理，跳应用宝 -->
 <div class="toolbar-bottom toolbar-download">
-  <a class="download-container" href="#">
-    <div class="logn-and-slogan">
-      <img class="logo" src="images/icon.png" srcset="images/icon@2x.png 2x" alt="US logo" width="36" height="36">
-      <span class="slogan">Us 非凡的活动记录者<br><span class="secondly-title">If not now, when? If not us, who?</span></span>
-    </div>
-    <div class="download-btn">下载Us</div>
-  </a>
+	<a class="download-container" href="#">
+		<div class="logn-and-slogan">
+			<img class="logo" src="images/icon.png" srcset="images/icon@2x.png 2x" alt="US logo" width="36" height="36">
+			<span class="slogan">Us 非凡的活动记录者<br><span class="secondly-title">If not now, when? If not us, who?</span></span>
+		</div>
+		<div class="download-btn">下载Us</div>
+	</a>
 </div>
 
 
 <div class="guide-to-open-in-browser">
-  <div class="guide-right-top-corner">点击右上角按钮</div>
-  <div>选择“<span class="strong">在浏览器中打开</span>”就可以下载啦</div>
+	<div class="guide-right-top-corner">点击右上角按钮</div>
+	<div>选择“<span class="strong">在浏览器中打开</span>”就可以下载啦</div>
+</div>
+
+<!--拉杆效果-->
+<div id="drawbar">
+	<img class="drawbar-authorimg" src="http://uspic-10006628.file.myqcloud.com/profile/avatar/default_40x40.jpg" alt width="40px" height="40px">
+	<div class="drawbar-data">
+		<p></p>
+		<p></p>
+	</div>
+	<span class="mitsu">
+		<div class="mitsu_up"></div>
+		<div class="mitsu_down"></div>
+	</span>
 </div>
 
 <!-- Root element of PhotoSwipe. Must have class pswp. -->
 <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
 
-  <!-- Background of PhotoSwipe.
-         It's a separate element as animating opacity is faster than rgba(). -->
-  <div class="pswp__bg"></div>
+	<!-- Background of PhotoSwipe.
+			 It's a separate element as animating opacity is faster than rgba(). -->
+	<div class="pswp__bg"></div>
 
-  <!-- Slides wrapper with overflow:hidden. -->
-  <div class="pswp__scroll-wrap">
+	<!-- Slides wrapper with overflow:hidden. -->
+	<div class="pswp__scroll-wrap">
 
-    <!-- Container that holds slides.
-            PhotoSwipe keeps only 3 of them in the DOM to save memory.
-            Don't modify these 3 pswp__item elements, data is added later on. -->
-    <div class="pswp__container">
-      <div class="pswp__item"></div>
-      <div class="pswp__item"></div>
-      <div class="pswp__item"></div>
-    </div>
+		<!-- Container that holds slides.
+				PhotoSwipe keeps only 3 of them in the DOM to save memory.
+				Don't modify these 3 pswp__item elements, data is added later on. -->
+		<div class="pswp__container">
+			<div class="pswp__item"></div>
+			<div class="pswp__item"></div>
+			<div class="pswp__item"></div>
+		</div>
 
-    <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
-    <div class="pswp__ui pswp__ui--hidden">
+		<!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+		<div class="pswp__ui pswp__ui--hidden">
 
-      <div class="pswp__top-bar">
+			<div class="pswp__top-bar">
 
-        <!--  Controls are self-explanatory. Order can be changed. -->
+				<!--  Controls are self-explanatory. Order can be changed. -->
 
-        <div class="pswp__counter"></div>
+				<div class="pswp__counter"></div>
 
-        <button class="pswp__button pswp__button--close" title="关闭 (Esc)"></button>
+				<button class="pswp__button pswp__button--close" title="关闭 (Esc)"></button>
 
 
-        <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
-        <!-- element will get class pswp__preloader--active when preloader is running -->
-        <div class="pswp__preloader">
-          <div class="pswp__preloader__icn">
-            <div class="pswp__preloader__cut">
-              <div class="pswp__preloader__donut"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+				<!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+				<!-- element will get class pswp__preloader--active when preloader is running -->
+				<div class="pswp__preloader">
+					<div class="pswp__preloader__icn">
+						<div class="pswp__preloader__cut">
+							<div class="pswp__preloader__donut"></div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-      <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-        <div class="pswp__share-tooltip"></div>
-      </div>
+			<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+				<div class="pswp__share-tooltip"></div>
+			</div>
 
-      <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-      </button>
+			<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+			</button>
 
-      <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-      </button>
+			<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+			</button>
 
-      <div class="pswp__caption">
-        <div class="pswp__caption__center"></div>
-      </div>
+			<div class="pswp__caption">
+				<div class="pswp__caption__center"></div>
 
-      <div class="pswp__author">
-        <div class="pswp__author__avatar">
-          <img src="data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==" width="30" height="30">
-        </div>
-        <div class="pswp__author__name"></div>
-      </div>
+			</div>
 
-      <div class="pswp__shoot-time"></div>
+			<div class="pswp__author">
+				<div class="pswp__author__avatar">
+					<img src="data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==" width="30" height="30">
+				</div>
+				<div class="pswp__author__name"></div>
+			</div>
 
-    </div>
+			<div class="pswp__comment">
+				<div class="pswp__bubblenum">0</div>
+				<div class="pswp__bubble"></div>
+				<div class="pswp__heartnum">0</div>
+				<div class="pswp__heart"></div>
+			</div>
 
-  </div>
+			<div class="pswp__data">
+				<div class="pswp__shoot-time"></div>
+			</div>
+
+		</div>
+
+	</div>
 
 </div>
 
 <!-- <div class="show-author-img"></div> -->
 
 <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?3bce8aafd9e765ec3d07cbfd572fddcf";
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(hm, s);
-})();
+	var _hmt = _hmt || [];
+	(function() {
+		var hm = document.createElement("script");
+		hm.src = "//hm.baidu.com/hm.js?3bce8aafd9e765ec3d07cbfd572fddcf";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hm, s);
+	})();
 </script>
 
 
