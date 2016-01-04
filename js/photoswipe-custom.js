@@ -14,8 +14,8 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
           h: parseInt(size[1], 10),
           el: photoItem,
           author: $photoItem.attr('data-author'),
-		  likecount: $photoItem.attr('data-likecount'),
-		  commentcount: $photoItem.attr('data-commentcount')
+		  // likecount: $photoItem.attr('data-likecount'),
+		  // commentcount: $photoItem.attr('data-commentcount')
         };
       if($photoItem.attr('data-description').length > 0) {
         item.title = $photoItem.attr('data-description');
@@ -161,8 +161,8 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
 
       $(gallery.template).find('.pswp__shoot-time').html(shootTime);
       $(gallery.template).find('.pswp__author__name').html(gallery.currItem.author);
-		$(gallery.template).find('.pswp__bubblenum').html(gallery.currItem.commentcount);
-		$(gallery.template).find('.pswp__heartnum').html(gallery.currItem.likecount);
+		// $(gallery.template).find('.pswp__bubblenum').html(gallery.currItem.commentcount);
+		// $(gallery.template).find('.pswp__heartnum').html(gallery.currItem.likecount);
       $(gallery.template).find('.pswp__author__avatar img').attr('src', gallery.currItem.avatar);
 	});
 
