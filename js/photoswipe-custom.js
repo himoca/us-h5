@@ -13,9 +13,7 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
           w: parseInt(size[0], 10),
           h: parseInt(size[1], 10),
           el: photoItem,
-          author: $photoItem.attr('data-author'),
-		  likecount: $photoItem.attr('data-likecount'),
-		  commentcount: $photoItem.attr('data-commentcount')
+          author: $photoItem.attr('data-author')
         };
       if($photoItem.attr('data-description').length > 0) {
         item.title = $photoItem.attr('data-description');
@@ -88,7 +86,6 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
       loadingIndicatorDelay: 500,
       pinchToClose: false,
       closeOnVerticalDrag: false,
-		//allowUserZoom: false,
       // getThumbBoundsFn: false,
       // focus: false,
       // tapToClose: true ,
@@ -159,12 +156,10 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
       // var shootTime = moment(parseInt(gallery.currItem.shootTime)).format('YYYY[年]MM[月]DD[日] HH:mm');
       // TODO: 如果是今年不显示年份
 
-      $(gallery.template).find('.pswp__shoot-time').html(shootTime);
-      $(gallery.template).find('.pswp__author__name').html(gallery.currItem.author);
-		$(gallery.template).find('.pswp__bubblenum').html(gallery.currItem.commentcount);
-		$(gallery.template).find('.pswp__heartnum').html(gallery.currItem.likecount);
+      $(gallery.template).find('.pswp__shoot-time').html(shootTime)
+      $(gallery.template).find('.pswp__author__name').html(gallery.currItem.author)
       $(gallery.template).find('.pswp__author__avatar img').attr('src', gallery.currItem.avatar);
-	});
+    });
 
     gallery.init();
 
