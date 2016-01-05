@@ -860,7 +860,8 @@ function showAuthorImg(src,name,sex,uid) {
 					var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 					var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 					$templateAuthorBigImgs.find('.bigimg-src img').attr('src', src);
-					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname + ' , ' + authorSex);
+					//$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname + ' , ' + authorSex);
+					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname);
 					$templateAuthorBigImgs.find('.bigimg-commonevent p').html(d.p.event.content);
 					$templateAuthorBigImgs.addClass('show').appendTo('body');
 					$modalBackdrop.on('touchstart mousedown', function (e) {
@@ -888,7 +889,8 @@ function showAuthorImg(src,name,sex,uid) {
 					var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 					var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 					$templateAuthorBigImgs.find('.bigimg-src img').attr('src',src);
-					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
+					//$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
+					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name);
 					$templateAuthorBigImgs.addClass('show').appendTo('body');
 					$modalBackdrop.on('touchstart mousedown', function (e) {
 						e.preventDefault();
@@ -916,7 +918,8 @@ function showAuthorImg(src,name,sex,uid) {
 		var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 		var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 		$templateAuthorBigImgs.find('.bigimg-src img').attr('src',src);
-		$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
+		//$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
+		$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name);
 		$templateAuthorBigImgs.addClass('show').appendTo('body');
 		$modalBackdrop.on('touchstart mousedown', function (e) {
 			e.preventDefault();
@@ -934,9 +937,9 @@ function showAuthorImg(src,name,sex,uid) {
 }
 
 // 拉杆效果
-function showDrawBar() {
-	//$("html").niceScroll();
-}
+//function showDrawBar() {
+//	//$("html").niceScroll();
+//}
 
 
 // 获取相册渲染数据
