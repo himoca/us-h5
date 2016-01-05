@@ -178,9 +178,9 @@ function register() {
 				//alert(getQueryStringArgs().invitation_code);
 			}
 
-			if (d.c !== 200) {
-				alert('活动不存在');
-			}else{
+			// if (d.c !== 200) {
+			// 	alert('活动不存在');
+			// }else{
 				galleryData.sessionKey = d.session_key;
 				galleryData.avatar = d.avatar;
 				galleryData.uid = d.uid;
@@ -189,7 +189,7 @@ function register() {
 				// var loginMarkCookie = getQueryStringArgs().invitation_code;
 				$.cookie('loginMarkCookie','CheckCheck',{expires:30});
 				if(d.uid) getGallery();
-			}
+			// }
 		},
 		error: function(e) {
 			alert('活动不存在');
@@ -470,7 +470,10 @@ function uploadFile() {
 		}).on('fileuploaddone', function (e, data) {
 			// alert(JSON.stringify(data.files[0].preview));
 			 $('.state-progress').hide();  //上传完成提示
-			 $('.state-text').css("margin","0 auto").html("上传结束，刷新中…");
+			var stateText = $('.state-text').text();
+			if(stateText !== "上传失败，请点击重试") {
+				 $('.state-text').css("margin","0 auto").html("上传结束，刷新中…");
+			}
 			console.log('上传done', data);
 			// alert('上传完成')
 			pictureIndex++;
