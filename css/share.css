@@ -947,7 +947,10 @@ button.close {
 
 .toolbar-upload .open-app {
 	color: inherit;
-	float: left;
+	/*float: left;*/
+	position: absolute;
+	left: 0;
+	bottom: 0;
 	padding-left: 20px;
 	padding-right: 20px;
 	text-decoration: none;
@@ -1875,9 +1878,17 @@ body.with-toolbar-bottom {
 	float: right;
 	padding-right: 20px;
 	line-height: 30px;
+}*/
+
+.pswp__shoot-time {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  color: #fff;
+  line-height: 30px;
 }
 
-.pswp__comment {
+/*.pswp__comment {
 	position: absolute;
 	bottom: 20px;
 	right: 10px;
@@ -1918,15 +1929,17 @@ body.with-toolbar-bottom {
 	margin-right: 10px;
 }
 */
-
-.pswp__shoot-time {
+.pswp__author {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  color: #fff;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  height: 50px;
   line-height: 30px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
 }
-
 
 /*.pswp__author {
 	position: absolute;
@@ -1939,20 +1952,8 @@ body.with-toolbar-bottom {
 	line-height: 30px;
 	color: #fff;
 	background-color: rgba(0, 0, 0, 0.5);
-}
-*/
+}*/
 
-.pswp__author {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px;
-  height: 50px;
-  line-height: 30px;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.5);
-}
 
 .pswp__author__avatar {
 	width: 30px;
@@ -1969,6 +1970,16 @@ body.with-toolbar-bottom {
 	background-color: rgba(0, 0, 0, 0.5);
 }
 
+.pswp__caption {
+  bottom: 50px;
+  min-height: 30px;
+}
+
+.pswp__caption__center {
+  color: #fff;
+  padding-bottom: 0;
+}
+
 /*.pswp__caption {
 	bottom: 90px;
 	min-height: 30px;
@@ -1981,20 +1992,37 @@ body.with-toolbar-bottom {
 	padding-bottom: 0;
 }*/
 
-.pswp__caption {
-  bottom: 50px;
-  min-height: 30px;
-}
-
-.pswp__caption__center {
-  color: #fff;
-  padding-bottom: 0;
-}
-
-
 .pswp__img--placeholder {
 	opacity: 0 !important;
 }
+
+#onload-gif {
+	display: block;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 1;
+	z-index: 10010;
+	background: #fff;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+	-ms-transition: all 0.5s;
+	-o-transition: all 0.5s;
+	transition: all 0.5s;
+}
+
+#onload-gifimg {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin: -20px 0 0 -20px;
+}
+
+
 /*# sourceMappingURL=share.css.map */
 
 /*.show-author-img {

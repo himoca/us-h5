@@ -17,7 +17,7 @@ if(location.protocol === 'file:') {
 
 var urlConfig = {};
 var memberList = {};
-var versionNumber = '1.0.1';
+var versionNumber = '1.1.0';
 
 var appId;
 // 正式环境
@@ -192,7 +192,11 @@ function register() {
 			// }
 		},
 		error: function(e) {
+			// $('.onload-gif').hide();
+			// clearInterval(onloadGifTime);
 			alert('活动不存在');
+			$('#onload-gifimg').remove();
+			WeixinJSBridge.call('closeWindow');
 		}
 	})
 }
@@ -216,7 +220,11 @@ function loginCheck() {
 		success: function (d) {
 			//alert(JSON.stringify(d));
 			if (d.c !== 200) {
+				// $('.onload-gif').hide();
+				// clearInterval(onloadGifTime);
 				alert('活动不存在');
+				$('#onload-gifimg').remove();
+				WeixinJSBridge.call('closeWindow');
 			}else if (d.p.uid && d.p.avatar && d.p.session_key && d.p.nickname && d.p.session_key !== 'false') {
 				galleryData.sessionKey = d.p.session_key;
 				galleryData.avatar = d.p.avatar;
@@ -240,7 +248,11 @@ function loginCheck() {
 			}
 		},
 		error: function(e){
-		  alert('活动不存在');
+			// $('.onload-gif').hide();
+			// clearInterval(onloadGifTime);
+			alert('活动不存在');
+			$('#onload-gifimg').remove();
+			WeixinJSBridge.call('closeWindow');
 		}
 	})
 }
@@ -248,20 +260,27 @@ function loginCheck() {
 //邀请载入提示
 function inviteOnloadTip() {
 	var templateInviteOnloadTip = _.template($('#invite-onload-tip').text());
-	var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: $('.gallery-cover').offset().top - 20 + 'px'});
+	if (parseInt(window.screen.height) <= 500) {
+	    var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: '100px'});
+	  }else {
+	    var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: $('.gallery-cover').offset().top - 20 + 'px'});
+	  }
 	var $templateInviteOnloadTips = $(templateInviteOnloadTips);
 	var $modalBackdrop = $('<div class="modal-backdrop"></div>');
-	var inviteOnloadTipCoverTop = $('.gallery-cover').offset().top;
 	//alert(inviteOnloadTipCoverTop);
 	$templateInviteOnloadTips.addClass('show').appendTo('body');
-	$('.onloadtip-btnarea').on('touchstart', function (e) {
+	$('.onloadtip-btnarea').on('click', function (e) {
 		e.preventDefault();
+		$('body').unbind('touchmove');
 		$(this).closest('.onloadtip').removeClass('show');
 		$modalBackdrop.removeClass('show');
 		$templateInviteOnloadTips.remove();
 		$modalBackdrop.remove();
 	});
 	$modalBackdrop.addClass('show').appendTo('body');
+	$('body').bind('touchmove', function (e) {
+		e.preventDefault();
+	});
 }
 
 //上传锁定提示
@@ -273,12 +292,16 @@ function activeLockTip() {
 	$templateToolbarLockTipNicname.addClass('show').appendTo('body');
 	$('.locktipbtn').on('click', function (e) {
 		e.preventDefault();
+		$('body').unbind('touchmove');
 		$(this).closest('.locktip').removeClass('show');
 		$modalBackdrop.removeClass('show');
 		$templateToolbarLockTipNicname.remove();
 		$modalBackdrop.remove();
 	});
 	$modalBackdrop.addClass('show').appendTo('body');
+	$('body').bind('touchmove', function (e) {
+		e.preventDefault();
+	});
 }
 
 //网页已加载后，上传失败锁定提示，确定后刷新页面
@@ -290,6 +313,7 @@ function appearLockTip() {
 	$templateToolbarLockTipNicname.addClass('show').appendTo('body');
 	$('.locktipbtn').on('click', function (e) {
 		e.preventDefault();
+		$('body').unbind('touchmove');
 		$(this).closest('.locktip').removeClass('show');
 		$modalBackdrop.removeClass('show');
 		$templateToolbarLockTipNicname.remove();
@@ -297,6 +321,9 @@ function appearLockTip() {
 		location.replace(location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite');
 	});
 	$modalBackdrop.addClass('show').appendTo('body');
+	$('body').bind('touchmove', function (e) {
+		e.preventDefault();
+	});
 }
 
 function createMoment() {
@@ -347,6 +374,7 @@ function uploadFile() {
 			$templateInviteUploadTips.addClass('show').appendTo('body');
 			$('.close').on('click', function (e) {
 				e.preventDefault();
+				$('body').unbind('touchmove');
 				$(this).closest('.uploadtip').removeClass('show');
 				$modalBackdrop.removeClass('show');
 				$templateInviteUploadTips.remove();
@@ -354,9 +382,10 @@ function uploadFile() {
 			});
 			$('.uploadtip-continue').on('click', function (e) {
 				e.preventDefault();
+				$('body').unbind('touchmove');
+				$('#input-file').removeAttr("disabled");
 				$(this).closest('.uploadtip').removeClass('show');
 				$modalBackdrop.removeClass('show');
-				$('#input-file').removeAttr("disabled");
 				$templateInviteUploadTips.remove();
 				$modalBackdrop.remove();
 				$('.upload-cover').css('display','none');
@@ -365,6 +394,7 @@ function uploadFile() {
 			});
 			$('.uploadtip-download').on('click', function (e) {
 				e.preventDefault();
+				$('body').unbind('touchmove');
 				$(this).closest('.uploadtip').removeClass('show');
 				$modalBackdrop.removeClass('show');
 				$templateInviteUploadTips.remove();
@@ -372,9 +402,15 @@ function uploadFile() {
 				location.href = downloadLink.microdownload;
 			});
 			$modalBackdrop.addClass('show').appendTo('body');
+			$('body').bind('touchmove', function (e) {
+				e.preventDefault();
+			});
 		});
 	}else {
-		$('#input-file').click();
+		setTimeout(function(){
+			$('#input-file').click();
+		},300);
+
 		$('#input-file').fileupload({
 			url: urlProtocol + urlConfig.upload_domain + '/Us/Event/upload',
 			dataType: 'json',
@@ -792,6 +828,7 @@ function getJsSdkData() {
 						$templateInviteUploadTips.addClass('show').appendTo('body');
 						$('.close').on('click', function (e) {
 							e.preventDefault();
+							$('body').unbind('touchmove');
 							$(this).closest('.uploadtip').removeClass('show');
 							$modalBackdrop.removeClass('show');
 							$templateInviteUploadTips.remove();
@@ -799,6 +836,7 @@ function getJsSdkData() {
 						});
 						$('.uploadtip-continue').on('click', function (e) {
 							e.preventDefault();
+							$('body').unbind('touchmove');
 							$(this).closest('.uploadtip').removeClass('show');
 							$modalBackdrop.removeClass('show');
 							setTimeout(function(){
@@ -810,6 +848,7 @@ function getJsSdkData() {
 						});
 						$('.uploadtip-download').on('click', function (e) {
 							e.preventDefault();
+							$('body').unbind('touchmove');
 							$(this).closest('.uploadtip').removeClass('show');
 							$modalBackdrop.removeClass('show');
 							$templateInviteUploadTips.remove();
@@ -817,6 +856,9 @@ function getJsSdkData() {
 							location.href = downloadLink.microdownload;
 						});
 						$modalBackdrop.addClass('show').appendTo('body');
+						$('body').bind('touchmove', function (e) {
+							e.preventDefault();
+						});
 					}else {
 						wxChooseImage();
 					}
@@ -903,7 +945,9 @@ function showAuthorImg(src,name,sex,uid) {
 						},180);
 					});
 					$modalBackdrop.addClass('show').appendTo('body');
-					$('body').bind('touchmove',function(e){e.preventDefault();});
+					$('body').bind('touchmove',function (e) {
+						e.preventDefault();
+					});
 				}
 			}
 		})
@@ -932,7 +976,9 @@ function showAuthorImg(src,name,sex,uid) {
 			},180);
 		});
 		$modalBackdrop.addClass('show').appendTo('body');
-		$('body').bind('touchmove',function(e){e.preventDefault();});
+		$('body').bind('touchmove',function (e) {
+			e.preventDefault();
+		});
 	}
 }
 
@@ -960,7 +1006,11 @@ function getGallery() {
 			}
 
 			if(d.c == 403) {
+				// $('.onload-gif').hide();
+				// clearInterval(onloadGifTime);
 				alert('活动不存在');
+				$('#onload-gifimg').remove();
+				WeixinJSBridge.call('closeWindow');
 			}else if(d.m === 'success') {
 
 				galleryData.invitationCode = d.p.invitation_code;  //pokola 20151211
@@ -1079,7 +1129,10 @@ function getGallery() {
 				if (environment.isWeixin && getQueryStringArgs().target === 'invite') {
 					inviteOnloadTip();
 				}
+
+
 				//poko
+
 				$('.gallery-authors-tip').html('<p>'+galleryData.memberlength+'</p>');
 				var galleryauthorsWidth = galleryData.memberlength*40 + 'px';
 				$('.gallery-authors').css('max-width',galleryauthorsWidth);
@@ -1103,7 +1156,7 @@ function getGallery() {
 				//alert(urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount');
 				// 从sessionStorage中查看是否刚上传过的标记，有则给个提示，并删掉标记
 				console.log(sessionStorage);
-				$(document.body).append('<div class="hint global-hint hint-dismissible"><button type="button" class="close"><span>×</span></button>您上传的图片已按拍照时间顺序发布到相册<br>如果时间存在误差，请使用US应用进行编辑</div>')
+				$(document.body).append('<div class="hint global-hint hint-dismissible"><button type="button" class="close"><span>×</span></button>您上传的图片已按拍照时间顺序发布到相册<br>如果时间存在误差，请使用Us应用进行编辑</div>')
 				if(sessionStorage['just-uploaded'] === "1") {
 					sessionStorage.removeItem('just-uploaded');
 					$('.global-hint').addClass('slide-in');
@@ -1119,6 +1172,13 @@ function getGallery() {
 					effect: "fadeIn",
 					placeholder: 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw=='
 				});
+
+				$('.gallery-cover-inner').find('img').load(function(){
+					$('#onload-gif').css('opacity','0');
+					setTimeout(function(){
+						$('#onload-gif').remove();
+					},500)
+				})
 
 				// 初始化photoSwipe
 				initPhotoSwipeFromDOM('.photo-group-container');
@@ -1256,6 +1316,8 @@ $(function () {
 		var $templateToolbarInvitationCodeCompiled = $(templateToolbarInvitationCodeCompiled);
 		var $modalBackdrop = $('<div class="modal-backdrop"></div>');
 		$('.close', $templateToolbarInvitationCodeCompiled).on('click', function (e) {
+			e.preventDefault();
+			$('body').unbind('touchmove');
 			$(this).closest('.modal').removeClass('show');
 			$modalBackdrop.removeClass('show');
 			$templateToolbarInvitationCodeCompiled.remove();
@@ -1263,13 +1325,17 @@ $(function () {
 		});
 		$templateToolbarInvitationCodeCompiled.addClass('show').appendTo('body').on('click', '.invitationbtn', function (e) {
 			e.preventDefault();
-			if(environment.isIos) {
-				location.href = downloadLink.microdownload;
-			}
-			if(environment.isAndroid) {
-				location.href = downloadLink.microdownload;
-			}
+			$('body').unbind('touchmove');
+			//if(environment.isIos) {
+			location.href = downloadLink.microdownload;
+			//}
+			//if(environment.isAndroid) {
+			//	location.href = downloadLink.microdownload;
+			//}
 		});
 		$modalBackdrop.addClass('show').appendTo('body');
+		$('body').bind('touchmove', function (e) {
+			e.preventDefault();
+		});
 	});
 });
