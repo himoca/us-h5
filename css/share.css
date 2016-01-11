@@ -735,7 +735,7 @@ button.close {
 	margin: 0 auto 26px auto; /*poko*/
 	max-width: 260px;
 	max-height: 52px;
-	overflow: hidden;
+	/*overflow: hidden;*/
 	font-weight: 500;
 }
 
