@@ -155,6 +155,7 @@ function register() {
 		data: {
 			code: getQueryStringArgs().code,
 			invitation_code: getQueryStringArgs().invitation_code,
+			target: 'event',
 			type: 3,
 			platform: 2,
 			device_id: 'web',
@@ -209,6 +210,7 @@ function loginCheck() {
 		data: {
 			code: getQueryStringArgs().code,
 			invitation_code: getQueryStringArgs().invitation_code,
+			target: 'event',
 			type: 3,
 			platform: 2,
 			device_id: 'web',

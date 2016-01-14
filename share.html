@@ -60,62 +60,62 @@
 		<div class="photo-group-container" data-width="<%= template.width %>">
 			<% var pictureIndex = 0, pictureLength = pictures.length, p_mark = '', currentPhotoGroup; console.log('数据中的图片数' + pictureLength) %>
 			<% if(typeof template.band !== 'undefined') { %>
-			<% photoLoop: for(var photoGroupIndex = 0, photoGroup = template.band, photoGroupLength = photoGroup.length; photoGroupIndex < photoGroupLength;photoGroupIndex++) { %>
-			<% if(pictureLength === 0) break; %>
+				<% photoLoop: for(var photoGroupIndex = 0, photoGroup = template.band, photoGroupLength = photoGroup.length; photoGroupIndex < photoGroupLength;photoGroupIndex++) { %>
+					<% if(pictureLength === 0) break; %>
 
-			<% if((pictureLength - pictureIndex) >= photoGroup[photoGroupIndex].rect.length && photoGroup[photoGroupIndex].rect.length > 1) { %>
-			<% var p_bandLength = photoGroup[photoGroupIndex].rect.length; %>
-			<% for(var p_pickUpPic = pictureIndex; p_pickUpPic < pictureIndex + p_bandLength; p_pickUpPic++ ) {%>
-			<% if (pictures[p_pickUpPic].content !== '') { %>
-			<% if (p_pickUpPic - pictureIndex > 0) { %>
-			<% var p_bandSpecial = p_pickUpPic - pictureIndex; %>
-			<% var p_bandSpecNum = galleryData.fixedTemplateIndex[p_bandSpecial - 1]; %>
-			<% if(p_bandSpecNum == 0) {p_bandSpecNum++;} %>
-			<% currentPhotoGroup = photoGroup[p_bandSpecNum]; %>
-			<% p_mark = 'pokola'; %>
-			<% photoGroupIndex--; %>
-			<% break; %>
-			<% } else if(p_pickUpPic - pictureIndex == 0) {%>
-			<% currentPhotoGroup = photoGroup[1]; %>
-			<% p_mark = 'pokola'; %>
-			<% photoGroupIndex--; %>
-			<% break; %>
-			<% } %>
-			<% } %>
-			<% } %>
-			<% }; %>
+					<% if((pictureLength - pictureIndex) >= photoGroup[photoGroupIndex].rect.length && photoGroup[photoGroupIndex].rect.length > 1) { %>
+						<% var p_bandLength = photoGroup[photoGroupIndex].rect.length; %>
+						<% for(var p_pickUpPic = pictureIndex; p_pickUpPic < pictureIndex + p_bandLength; p_pickUpPic++ ) {%>
+							<% if (pictures[p_pickUpPic].content !== '') { %>
+								<% if (p_pickUpPic - pictureIndex > 0) { %>
+									<% var p_bandSpecial = p_pickUpPic - pictureIndex; %>
+									<% var p_bandSpecNum = galleryData.fixedTemplateIndex[p_bandSpecial - 1]; %>
+									<% if(p_bandSpecNum == 0) {p_bandSpecNum++;} %>
+									<% currentPhotoGroup = photoGroup[p_bandSpecNum]; %>
+									<% p_mark = 'pokola'; %>
+									<% photoGroupIndex--; %>
+									<% break; %>
+								<% } else if(p_pickUpPic - pictureIndex == 0) {%>
+									<% currentPhotoGroup = photoGroup[1]; %>
+									<% p_mark = 'pokola'; %>
+									<% photoGroupIndex--; %>
+									<% break; %>
+								<% } %>
+							<% } %>
+						<% } %>
+					<% }; %>
 
-			<% if((pictureLength - pictureIndex) < photoGroup[photoGroupIndex].rect.length) { %>
-			<% for(var p_pickUpPic = pictureIndex; p_pickUpPic < pictureLength; p_pickUpPic++ ) {%>
-			<% if (pictures[p_pickUpPic].content !== '') { %>
-			<% if (p_pickUpPic - pictureIndex > 0) { %>
-			<% var p_bandSpecial = p_pickUpPic - pictureIndex; %>
-			<% var p_bandSpecNum = galleryData.fixedTemplateIndex[p_bandSpecial - 1]; %>
-			<% if(p_bandSpecNum == 0) {p_bandSpecNum++;} %>
-			<% currentPhotoGroup = photoGroup[p_bandSpecNum]; %>
-			<% p_mark = 'pokola'; %>
-			<% photoGroupIndex--; %>
-			<% break; %>
-			<% } else if(p_pickUpPic - pictureIndex == 0) {%>
-			<% currentPhotoGroup = photoGroup[1]; %>
-			<% p_mark = 'pokola'; %>
-			<% photoGroupIndex--; %>
-			<% break; %>
+				<% if((pictureLength - pictureIndex) < photoGroup[photoGroupIndex].rect.length) { %>
+					<% for(var p_pickUpPic = pictureIndex; p_pickUpPic < pictureLength; p_pickUpPic++ ) {%>
+						<% if (pictures[p_pickUpPic].content !== '') { %>
+							<% if (p_pickUpPic - pictureIndex > 0) { %>
+								<% var p_bandSpecial = p_pickUpPic - pictureIndex; %>
+								<% var p_bandSpecNum = galleryData.fixedTemplateIndex[p_bandSpecial - 1]; %>
+								<% if(p_bandSpecNum == 0) {p_bandSpecNum++;} %>
+								<% currentPhotoGroup = photoGroup[p_bandSpecNum]; %>
+								<% p_mark = 'pokola'; %>
+								<% photoGroupIndex--; %>
+								<% break; %>
+							<% } else if(p_pickUpPic - pictureIndex == 0) {%>
+								<% currentPhotoGroup = photoGroup[1]; %>
+								<% p_mark = 'pokola'; %>
+								<% photoGroupIndex--; %>
+								<% break; %>
+							<% } %>
+						<% } %>
+					<% } %>
+				<% if(p_mark !== 'pokola'){ %>
+					<% photoGroupIndex = galleryData.fixedTemplateIndex[pictureLength - pictureIndex - 1] %>
+				<% } %>
 			<% } %>
-			<% } %>
-			<% } %>
+
 			<% if(p_mark !== 'pokola'){ %>
-			<% photoGroupIndex = galleryData.fixedTemplateIndex[pictureLength - pictureIndex - 1] %>
-			<% } %>
-			<% } %>
-
-			<% if(p_mark !== 'pokola'){ %>
-			<% currentPhotoGroup = photoGroup[photoGroupIndex]; %>
+				<% currentPhotoGroup = photoGroup[photoGroupIndex]; %>
 			<% }else { p_mark = '';} %>
 
-      <% if(currentPhotoGroup.rect.length > 1) { %>
-      <% p_imageorimages = 'images by'; %>
-      <% }else { p_imageorimages = 'image by';} %>
+      		<% if(currentPhotoGroup.rect.length > 1) { %>
+      			<% p_imageorimages = 'images by'; %>
+      		<% }else { p_imageorimages = 'image by';} %>
       
 			<% var width = template.width, headerHeight = currentPhotoGroup.textbox[0].height; %>
 			<div class="photo-group" data-height="<%= currentPhotoGroup.height %>" data-header-height="<%= headerHeight %>" style="padding-bottom: <%= (currentPhotoGroup.height - headerHeight)/width*100 + '%' %>">
