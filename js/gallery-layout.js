@@ -6,6 +6,7 @@
 
 var enableDesktopDebug = false;
 var enableAlertDebug = false;
+var pokoConsole = false;
 
 var apiUrl = location.protocol + '//' + location.host + '/Us/system/getDomainInfo';
 var urlProtocol = location.protocol + '//';
@@ -18,6 +19,8 @@ if(location.protocol === 'file:') {
 var urlConfig = {};
 var memberList = {};
 var versionNumber = '1.1.0';
+var screenWidth = $(window).width();  //屏幕宽度
+var screenHeight = $(window).height(); //屏幕高度
 
 var appId;
 // 正式环境
@@ -32,14 +35,6 @@ if (location.host === 'app.himoca.com') {
 if (location.host === 'ios.himoca.com') {
 	appId = 'wx627e1a2a49cc2810';
 }
-
-var galleryConfig = {
-	header: false,  //头部
-	headerHeight: 93,  //头部高度
-	footerWidthDescriptionHeight: 135,  //页脚宽度描述高度135
-	footerWidthoutDexcriptionHeight: 75, //页脚外宽度描述高度
-	filterType: -1 // -1是原图  0是1977  1是lomoFi  2是Hefe  3是Inkwell
-};
 
 var galleryData = {
 	galleryAvatars: [],
@@ -76,10 +71,10 @@ var environment = {
 	isWinPhone: (ua.indexOf('Windows Phone') > -1)
 };
 
-if (enableAlertDebug) {
-	alert(JSON.stringify(environment))
+if (pokoConsole) {
+	console.log(environment);
 }
-console.log(environment);
+
 
 // 获取操作系统
 function getOsVersion() {
@@ -127,18 +122,13 @@ function getRetinaImgSize(size) {
 	}
 }
 
-// function redirectTo(argument) {
-//   // body...
-// }
 
-// var loginMarkCheckCode = getQueryStringArgs().invitation_code;
 var loginMarkKey = $.cookie('loginMarkCookie');
 var hasLoginMarkKey = $.cookie('hasLoginCookie');
 var redirectUrl = location.protocol + '//' + location.host + location.pathname + '?invitation_code=' + getQueryStringArgs().invitation_code + '&target=invite';
 // 如果是微信环境且查询字符串的target是invite且还没获取code，则跳到授权页
 if (environment.isWeixin && getQueryStringArgs().target === 'invite' && !getQueryStringArgs().code) {
 	if (loginMarkKey !== 'CheckCheck') {
-		//alert('重新授权' + loginMarkKey);
 		location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUrl) + '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect';
 	}else {
 		location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUrl) + '&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
@@ -165,15 +155,7 @@ function register() {
 			distributor: 'web'
 		},
 		success: function (d) {
-			// if(enableAlertDebug) {
-			//   alert('register返回' + JSON.stringify(d));
-			// }
-
-			// 如果该用户没有获取过用户信息，则跳到授权权限为userinfo的授权
-			// if(!d.exist) {
-			//
-			// }
-			if (enableAlertDebug) {
+			if (pokoConsole) {
 				alert('register返回' + JSON.stringify(d));
 				alert(getQueryStringArgs().code);
 				//alert(getQueryStringArgs().invitation_code);
@@ -189,13 +171,17 @@ function register() {
 
 				// var loginMarkCookie = getQueryStringArgs().invitation_code;
 				$.cookie('loginMarkCookie','CheckCheck',{expires:30});
-				if(d.uid) getGallery();
+				if(d.uid) {
+					getGallery();
+				}else {
+					alert('故事加载失败，请稍后重试。(e:10002)');
+					$('#onload-gifimg').remove();
+					WeixinJSBridge.call('closeWindow');
+				}
 			// }
 		},
 		error: function(e) {
-			// $('.onload-gif').hide();
-			// clearInterval(onloadGifTime);
-			alert('活动不存在');
+			alert('故事不存在(e:10001)');
 			$('#onload-gifimg').remove();
 			WeixinJSBridge.call('closeWindow');
 		}
@@ -220,11 +206,8 @@ function loginCheck() {
 			distributor: 'web'
 		},
 		success: function (d) {
-			//alert(JSON.stringify(d));
 			if (d.c !== 200) {
-				// $('.onload-gif').hide();
-				// clearInterval(onloadGifTime);
-				alert('活动不存在');
+				alert('故事不存在(e:10011)');
 				$('#onload-gifimg').remove();
 				WeixinJSBridge.call('closeWindow');
 			}else if (d.p.uid && d.p.avatar && d.p.session_key && d.p.nickname && d.p.session_key !== 'false') {
@@ -232,10 +215,6 @@ function loginCheck() {
 				galleryData.avatar = d.p.avatar;
 				galleryData.uid = d.p.uid;
 				galleryData.nickname = d.p.nickname;
-				// alert(JSON.stringify(d));
-				//alert(getQueryStringArgs().code);
-				//alert(getQueryStringArgs().invitation_code);
-				//alert(JSON.stringify(d.p));
 				$.cookie('hasLoginCookie','LoginCheck',{expires:30});
 				getGallery();
 			} else {
@@ -250,9 +229,7 @@ function loginCheck() {
 			}
 		},
 		error: function(e){
-			// $('.onload-gif').hide();
-			// clearInterval(onloadGifTime);
-			alert('活动不存在');
+			alert('故事不存在(e:10012)');
 			$('#onload-gifimg').remove();
 			WeixinJSBridge.call('closeWindow');
 		}
@@ -260,17 +237,24 @@ function loginCheck() {
 }
 
 //邀请载入提示
-function inviteOnloadTip() {
+function inviteOnloadTip(d,pictureBaseUrl) {
 	var templateInviteOnloadTip = _.template($('#invite-onload-tip').text());
-	if (parseInt(window.screen.height) <= 500) {
-	    var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: '100px'});
-	  }else {
-	    var templateInviteOnloadTips = templateInviteOnloadTip({inviteOnloadTipCoverTop: $('.gallery-cover').offset().top - 20 + 'px'});
-	  }
+	var templateInviteOnloadTips = templateInviteOnloadTip();
 	var $templateInviteOnloadTips = $(templateInviteOnloadTips);
 	var $modalBackdrop = $('<div class="modal-backdrop"></div>');
-	//alert(inviteOnloadTipCoverTop);
 	$templateInviteOnloadTips.addClass('show').appendTo('body');
+	var coverFile = d.p.cover_page,
+		coverFileExt = coverFile.match(/(.*)\.(.*$)/)[2],
+		coverFileDirAndName = coverFile.match(/(.*)\.(.*$)/)[1];
+	var inviteOnloadTipImgWidth = parseInt($('.onloadtip-img').width());
+	var inviteOnloadTipImgHeight = parseInt($('.onloadtip-img').height()-1);
+	$('.onloadtip-img').find('img').attr('src',pictureBaseUrl + coverFileDirAndName + '_' + inviteOnloadTipImgWidth + 'x' + inviteOnloadTipImgHeight + '.' + coverFileExt).load(function () {
+		$('#onload-gif').css('opacity', '0');
+		setTimeout(function () {
+			$('#onload-gif').remove();
+		}, 500);
+	});
+	$('.onloadtip').css('margin-top','-' + ((inviteOnloadTipImgHeight/2) + 60) + 'px');
 	$('.onloadtip-btnarea').on('click', function (e) {
 		e.preventDefault();
 		$('body').unbind('touchmove');
@@ -343,8 +327,10 @@ function createMoment() {
 		},
 		success: function (d) {
 			//alert(JSON.stringify(d));
+			if (pokoConsole) {
+				console.log('createMoment', d);
+			}
 
-			console.log('createMoment', d);
 			galleryData.momentId = d.p.moment_id;
 			//alert(galleryData.eventId + ';' + galleryData.uid + ';' + galleryData.sessionKey)
 			//alert(galleryData.momentId);
@@ -433,8 +419,8 @@ function uploadFile() {
 			var formData = {},
 				exif,
 				options = {};
-
 			console.log(e);
+
 			$('.state').addClass('hide');
 			$('.state-upload').removeClass('hide');
 
@@ -448,8 +434,8 @@ function uploadFile() {
 					formData.session_key = galleryData.sessionKey;
 					formData.size = img.width + 'x' + img.height;
 					data.formData = formData;
-					console.log(data);
 
+					console.log(data);
 					console.log(img);
 
 				}, options);
@@ -463,7 +449,6 @@ function uploadFile() {
 					if(exifData.exif) {
 						exif = exifData.exif;
 						console.log(exifData.exif.getAll());
-
 						options.orientation = exif.get('Orientation');
 						// exif中保存的源数据类似这样 "2015:10:27 11:05:37"，要转成时间戳
 						// console.log(moment("2015:10:27 11:05:37", 'YYYY:MM:DD HH:mm:ss').valueOf());
@@ -617,18 +602,13 @@ function getJsSdkData() {
 
 			//pokola
 			var coverImgExt = galleryData.cover.match(/(.*)\.(.*$)/)[2], coverImgDirAndName = galleryData.cover.match(/(.*)\.(.*$)/)[1];
-			// if ( galleryData.invitationCode == getQueryStringArgs().invitation_code) {
-			// 	var str = 'invite';
-			// }else {
-			// 	var str = 'share';
-			// }
 			var shareConfig = {
 				title: (galleryData.date.getMonth() + 1) + '月' + galleryData.date.getDate() + '日 ' + galleryData.title, // 分享标题 TODO 不是今年要加年
-				desc: 'Us.非凡的活动记录者', // 分享描述
+				desc: 'Us.可以和亲密的人一起记录的APP', // 分享描述
 				link: location.host + location.pathname + '?invitation_code=' + galleryData.invitationCode + '&target=share', // 分享链接
 				imgUrl: urlProtocol + urlConfig.download_domain + '/' + coverImgDirAndName + '_300x300.' + coverImgExt, // 分享图标
 			};
-			console.log(shareConfig.imgUrl);
+			//console.log(shareConfig.imgUrl);
 
 			wx.config({
 				debug: enableAlertDebug ? true : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
@@ -873,6 +853,9 @@ function getJsSdkData() {
 				// alert(JSON.stringify(res))
 			});
 
+		},
+		error: function(e) {
+			alert('内部错误(e:10030)');
 		}
 	})
 }
@@ -892,7 +875,9 @@ function showAuthorImg(src,name,sex,uid) {
 				platform: 2
 			},
 			success: function (d) {
-				console.log(d);
+				if (pokoConsole) {
+					console.log(d);
+				}
 				if (d.p.user) {
 					if (d.p.user.gender == '0') {
 						var authorSex = '女';
@@ -904,8 +889,8 @@ function showAuthorImg(src,name,sex,uid) {
 					var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 					var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 					$templateAuthorBigImgs.find('.bigimg-src img').attr('src', src);
-					//$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname + ' , ' + authorSex);
-					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname);
+					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname + ' , ' + authorSex);
+					// $templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname);
 					$templateAuthorBigImgs.find('.bigimg-commonevent p').html(d.p.event.content);
 					$templateAuthorBigImgs.addClass('show').appendTo('body');
 					$modalBackdrop.on('touchstart mousedown', function (e) {
@@ -933,8 +918,8 @@ function showAuthorImg(src,name,sex,uid) {
 					var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 					var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 					$templateAuthorBigImgs.find('.bigimg-src img').attr('src',src);
-					//$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
-					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name);
+					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
+					// $templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name);
 					$templateAuthorBigImgs.addClass('show').appendTo('body');
 					$modalBackdrop.on('touchstart mousedown', function (e) {
 						e.preventDefault();
@@ -951,6 +936,9 @@ function showAuthorImg(src,name,sex,uid) {
 						e.preventDefault();
 					});
 				}
+			},
+			error: function(e) {
+				alert('获取失败(e:10053)');
 			}
 		})
 	}else {
@@ -964,8 +952,8 @@ function showAuthorImg(src,name,sex,uid) {
 		var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 		var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 		$templateAuthorBigImgs.find('.bigimg-src img').attr('src',src);
-		//$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
-		$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name);
+		$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
+		// $templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name);
 		$templateAuthorBigImgs.addClass('show').appendTo('body');
 		$modalBackdrop.on('touchstart mousedown', function (e) {
 			e.preventDefault();
@@ -984,12 +972,6 @@ function showAuthorImg(src,name,sex,uid) {
 	}
 }
 
-// 拉杆效果
-//function showDrawBar() {
-//	//$("html").niceScroll();
-//}
-
-
 // 获取相册渲染数据
 function getGallery() {
 	$.ajax({
@@ -1002,144 +984,188 @@ function getGallery() {
 			platform: 2
 		},
 		success: function (d) {
-			console.log(d);
+			if (pokoConsole) {
+				console.log(d);
+			}
+
 			if (enableAlertDebug) {
 				alert(JSON.stringify(d))
 			}
 
 			if(d.c == 403) {
-				// $('.onload-gif').hide();
-				// clearInterval(onloadGifTime);
-				alert('活动不存在');
+				alert('故事不存在(e:10051)');
 				$('#onload-gifimg').remove();
 				WeixinJSBridge.call('closeWindow');
-			}else if(d.m === 'success') {
+			}else if (d.m === 'success') {
 
 				galleryData.invitationCode = d.p.invitation_code;  //pokola 20151211
-				if(environment.isWeixin) {
+				if (environment.isWeixin) {
 					getJsSdkData();
 				}
 
 				memberList.creaternicname = d.p.member[0].n;
-				//alert(galleryData.invitationCode);
-				console.log(urlConfig);
-
-
-				var templateJSON = d.p.template.band;
-				// 提取第一个特定数量的模块的索引
-				(function() {
-					for(var i = 0, len = templateJSON.length; i < len; i++) {
-						var currentRectLen = templateJSON[i].rect.length;
-						if(galleryData.fixedTemplateIndex[currentRectLen - 1] === undefined) {
-							galleryData.fixedTemplateIndex[currentRectLen - 1] = i;
-						} else {
-							continue;
-						}
-					}
-				}());
-				console.log(galleryData.fixedTemplateIndex);
-
-				var templateMain = _.template($('#template-main').text());
-				var templateMainCompiled = templateMain(d.p);
-				var $templateMainCompiled = $(templateMain(d.p));
-				var $templatePhotoGroupCompiled = $templateMainCompiled.filter('.photo-group-container');
-				var mainWidth = d.p.template.width;
+				if (pokoConsole) {
+					console.log(urlConfig);
+				}
 				galleryData.eventId = d.p.event_id;
 				galleryData.title = d.p.name;
 				galleryData.date = new Date(parseInt(d.p.start_time));
 				galleryData.cover = d.p.cover_page;
 				galleryData.memberlength = d.p.member.length; //poko
 
+				var $body = $('body');
 				document.title = galleryData.title;
+				// hack在微信等webview中无法修改document.title的情况
+				var $iframe = $('<iframe src="/favicon.ico"></iframe>').on('load', function () {
+					setTimeout(function () {
+						$iframe.off('load').remove()
+					}, 0)
+				}).appendTo($body);
 
-
-				// console.log($templatePhotoGroupCompiled);
-
-				// 对编译好的模板计算布局
-				$templatePhotoGroupCompiled.find('.photo-group').each(function (i, v) {
-					var $photoGroup = $(v);
-					var photoDescriptionNum = 0;
-					var $photoDescriptionContainer = $(v).find('.photo-description');
-					var photoGroupHeight = $(v).data('height');
-					var $photoGroupFooter = $('.photo-group-footer', v);
-					var originalFooterHeight = $photoGroupFooter.data('height');
-					var footerWidth = $photoGroupFooter.data('width');
-					var authorNames = [];
-
-
-					$(v).find('.photo-item').each(function (i, v) {
-						var descriptionContent = v.dataset.description;
-						var authorName = $(v).attr('data-author');
-						if(descriptionContent.length > 0) {
-							photoDescriptionNum = i + 1;
-							$photoDescriptionContainer.append('<p>' + descriptionContent + '</p>');
-						}
-						if(authorName.length > 0) {
-							if(authorNames.indexOf(authorName) === -1) {
-								authorNames.push(authorName)
-							}
-						}
-					});
-
-					$(v).attr('data-photo-description-num', photoDescriptionNum);
-
-					if(photoDescriptionNum > 0) {
-						var footerHeight = galleryConfig.footerWidthDescriptionHeight; //135
-					} else {
-						var footerHeight = galleryConfig.footerWidthoutDexcriptionHeight; //75
-					}
-					photoGroupHeight = photoGroupHeight - galleryConfig.headerHeight - originalFooterHeight + footerHeight;
-					$photoGroup.css({'padding-bottom': photoGroupHeight/mainWidth*100 + '%'});
-					$photoGroupFooter.css({'padding-bottom': footerHeight/footerWidth*100 + '%'});
-					$(v).find('.photo-item').each(function (i, v) {
-						$(v).css({'top': ($(v).data('y') - galleryConfig.headerHeight)/photoGroupHeight*100 + '%'});
-					});
-					// $('.author-label', v).html(authorNames.length > 1 ? 'images by' : 'image by')
-					$('.author-name-group', v).html(authorNames.join(', '))
-
-				});
-
-				$('#main-container').append($templateMainCompiled);
-
-
-				// 模板插入DOM后，取每张缩略图需要的真实尺寸
-				$('.photo-item').each(function (i, v) {
-					var width = getRetinaImgSize(v.clientWidth);
-					var height = getRetinaImgSize(v.clientHeight);
-					var replaceText = width + 'x' + height;
-					var $img = $('img', v);
-					// .on('load', function () {
-					//   $(this).addClass('fade-in');
-					// });
-					// console.log($img.data('original'));
-					var trueImgUrl = $img.data('original').replace('replaceWidthxreplaceHeight', replaceText);
-					// console.log(trueImgUrl);
-					$('img', v).attr('data-original', trueImgUrl);
-
-				});
+				var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
 
 				// 插入封面图
-				$('.gallery-cover').each(function (i, v) {
-					var width = getRetinaImgSize(v.clientWidth);
-					var height = getRetinaImgSize(v.clientHeight);
+				$('.gallery-cover-inner').find('img').attr('src', function () {
+					var coverFile = d.p.cover_page,
+						coverFileExt = coverFile.match(/(.*)\.(.*$)/)[2],
+						coverFileDirAndName = coverFile.match(/(.*)\.(.*$)/)[1];
+					var width = getRetinaImgSize(screenWidth);
+					if (width >= 768*2) {
+						width = 768*2;
+					}
+					var height = parseInt(width * 0.75);
 					var replaceText = width + 'x' + height;
-					var $img = $('img', v);
-					var trueImgUrl = $img.data('original').replace('replaceWidthxreplaceHeight', replaceText);
-					$('img', v).attr('src', trueImgUrl);
+					var trueImgUrl = pictureBaseUrl + coverFileDirAndName + '_' + replaceText + '.' + coverFileExt;
+					return trueImgUrl;
 				});
-
-				if (environment.isWeixin && getQueryStringArgs().target === 'invite') {
-					inviteOnloadTip();
+				//插入日期
+				var startDate = new Date(parseInt(d.p.start_time)),
+					startDateMonth = startDate.getMonth() + 1,
+					startDateYear = startDate.getFullYear(),
+					startDateDay = startDate.getDate();
+				$('.gallery-date').html(startDateMonth + '.' + startDateDay + ' ' + startDateYear);
+				//插入标题
+				$('.gallery-title').html(d.p.name);
+				//标题及日期位置调整
+				$('.gallery-title').css('width', screenWidth - 40 + 'px');
+				var galleryTitle = $('.gallery-title').height();
+				if (galleryTitle > 18) {
+					$('.gallery-date').css('bottom', '111px');
 				}
+				//插入活动成员
+				for (var i = 0; i < d.p.member.length; i++) {
+					var ext = d.p.member[i].a.match(/(.*)\.(.*$)/)[2];
+					var fileDirAndName = d.p.member[i].a.match(/(.*)\.(.*$)/)[1];
+					$('.gallery-authors-inner').append("<div class='gallery-author'><img src='" + pictureBaseUrl + fileDirAndName + '_80x80' + '.' + ext + "' width='40' height='40'></div>")
+				}
+
+				// 创建照片结构
+				$('.photo-group-container').attr('data-width', d.p.template.width);
+				for (var i = 0; i < d.p.pictures.length; i++) {
+					var currentPicture = d.p.pictures[i];
+					var photoFile = currentPicture.object_id,  //图片数据库地址
+						photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2],
+						photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
+					var currentAvatar = currentPicture.avatar,  //用户头像数据库地址
+						avatarDirAndName = currentAvatar.match(/(.*)\.(.*$)/)[1],
+						avatarExt = currentAvatar.match(/(.*)\.(.*$)/)[2];
+					var sizeInterceptPosition = d.p.pictures[i].size.indexOf('x');
+					var wareWidth = parseInt(d.p.pictures[i].size.substring(0,sizeInterceptPosition));  //图片真实宽
+					var wareHeight = parseInt(d.p.pictures[i].size.substring(sizeInterceptPosition+1));  //图片真实高
+					var warePer = wareHeight / wareWidth;
+					var p_warePer = warePer;		//margintop取值
+					var p_screenWidth = screenWidth >= 768 ? 768 : screenWidth;
+					if (window.devicePixelRatio >= 2) {
+						if (screenWidth < screenHeight) {		//竖屏情况
+							if (wareWidth <= p_screenWidth*2) {		//如果真实图
+								var narrowPer = (p_screenWidth*2)/wareWidth;
+								var width = wareWidth;
+								var height = parseInt(width * warePer);
+								if (height*narrowPer > screenHeight*2 && height*narrowPer < 1200) {
+									height = parseInt((screenHeight*2)/narrowPer);
+									p_warePer = height/width;
+								}else if (height*narrowPer >= 1200) {
+									height = parseInt(1200/narrowPer);
+									p_warePer = height/width;
+								}
+							}else {
+								var width = p_screenWidth*2;
+								var height = parseInt(width * warePer);
+								if (height > screenHeight*2 && height < 1200) {
+									height = screenHeight*2;
+									p_warePer = screenHeight/p_screenWidth;
+								}else if (height >= 1200) {
+									height = 1200;
+									p_warePer = height/2/p_screenWidth;
+								}
+							}
+						}else {
+							if (wareWidth <= p_screenWidth*2) {		//如果真实图
+								var narrowPer = (p_screenWidth*2)/wareWidth;
+								var width = wareWidth;
+								var height = parseInt(width * warePer);
+								if (height*narrowPer >= 1200) {
+									height = parseInt(1200/narrowPer);
+									p_warePer = height/width;
+								}
+							}else {
+								var width = p_screenWidth*2;
+								var height = parseInt(width * warePer);
+								if (height >= 1200) {
+									height = 1200;
+									p_warePer = height/2/p_screenWidth;
+								}
+							}
+						}
+					}else {
+						if (wareWidth <= p_screenWidth) {
+							var narrowPer = (p_screenWidth*2)/wareWidth;
+							var width = wareWidth;
+							var height = parseInt(width * warePer);
+							if (height*narrowPer > 1200) {
+								height = parseInt(1200/narrowPer);
+								p_warePer = height/width;
+							}
+						}else {
+							var width = p_screenWidth;
+							var height = parseInt(width * warePer);
+							if (height > 1200) {
+								height = 1200;
+								p_warePer = height/p_screenWidth;
+							}
+						}
+					}
+					var replaceText = width + 'x' + height;
+					var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + replaceText + '.' + photoFileExt; //图片真实地址
+					var p_trueImgUrl = pictureBaseUrl + photoFileDirAndName + '.' + photoFileExt;
+					var trueAvatarImgUrl = pictureBaseUrl + avatarDirAndName + '_60x60' + '.' + avatarExt;
+
+					var photoContent = currentPicture.content;
+					if (photoContent == '') {
+						var photoGroupFooterAppear = 'none';
+					}else {
+						var photoGroupFooterAppear = 'block';
+					}
+
+					$('.photo-group-container').append("<div class='photo-group'><div class='photo-item' data-description='" + currentPicture.content + "' data-author='" + currentPicture.nickname + "' data-avatar='" + trueAvatarImgUrl + "' data-shoot-time='" + currentPicture.shoot_time + "' data-likecount='" + currentPicture.like_count + "' data-commentcount='" + currentPicture.comment_count + "' style='margin-top: " + p_warePer*100 + "%'><div class='photo-item-box'><img alt='' data-original='" + trueImgUrl + "' width='100%'><a class='photo-item-wrapper' href='" + p_trueImgUrl + "' data-size='" + currentPicture.size + "' ></a></div></div><div class='photo-group-footer' style='display: " + photoGroupFooterAppear + "'><p class='photocontent-inline'>" + photoContent + "</p></div></div>");
+				}
+
+				//$('.photocontent-inline').each(function(i){
+				//	if ($(this).height() > 54) {
+				//		$(this).addClass('photocontent-box').removeClass('photocontent-inline');
+				//	}
+				//});
+
+
 
 
 				//poko
 
-				$('.gallery-authors-tip').html('<p>'+galleryData.memberlength+'</p>');
-				var galleryauthorsWidth = galleryData.memberlength*40 + 'px';
-				$('.gallery-authors').css('max-width',galleryauthorsWidth);
+				$('.gallery-authors-tip').html('<p>' + d.p.member.length + '</p>');
+				var galleryauthorsWidth = d.p.member.length * 40 + 'px';
+				$('.gallery-authors').css('max-width', galleryauthorsWidth);
 				// 点击显示大头像
-				$('.gallery-author').unbind('click').on('click',function(){
+				$('.gallery-author').unbind('click').on('click', function () {
 					var authorNum = $(this).index();
 					var authorImgA = d.p.member[authorNum].a;
 					var authorName = d.p.member[authorNum].n;
@@ -1149,17 +1175,14 @@ function getGallery() {
 					var p_ext = authorImgA.match(/(.*)\.(.*$)/)[2];
 					var p_fileDirAndName = authorImgA.match(/(.*)\.(.*$)/)[1];
 					var authorImgSrc = p_pictureBaseUrl + p_fileDirAndName + '_250x250' + '.' + p_ext;
-					showAuthorImg(authorImgSrc,authorName,authorSex,authorUid);
+					showAuthorImg(authorImgSrc, authorName, authorSex, authorUid);
 				});
-
-				// 执行拉杆
-				//showDrawBar();
 
 				//alert(urlProtocol + urlConfig.init_domain + '/Us/stat/setEventCount');
 				// 从sessionStorage中查看是否刚上传过的标记，有则给个提示，并删掉标记
-				console.log(sessionStorage);
+				//console.log(sessionStorage);
 				$(document.body).append('<div class="hint global-hint hint-dismissible"><button type="button" class="close"><span>×</span></button>您上传的图片已按拍照时间顺序发布到相册<br>如果时间存在误差，请使用Us应用进行编辑</div>')
-				if(sessionStorage['just-uploaded'] === "1") {
+				if (sessionStorage['just-uploaded'] === "1") {
 					sessionStorage.removeItem('just-uploaded');
 					$('.global-hint').addClass('slide-in');
 					$('.hint-dismissible .close').on('click', function () {
@@ -1169,26 +1192,40 @@ function getGallery() {
 
 				// 延迟图片加载
 				$("img").lazyload({
-					threshold: 0,
-					failure_limit : 9999,
+					threshold: 200,
+					failure_limit: 9999,
 					effect: "fadeIn",
 					placeholder: 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw=='
 				});
 
-				$('.gallery-cover-inner').find('img').load(function(){
-					$('#onload-gif').css('opacity','0');
-					setTimeout(function(){
-						$('#onload-gif').remove();
-					},500)
-				})
+				if (environment.isWeixin && getQueryStringArgs().target === 'invite') {
+					inviteOnloadTip(d,pictureBaseUrl);
+				}else {
+					$('.gallery-cover-inner').find('img').load(function () {
+						$('#onload-gif').css('opacity', '0');
+						setTimeout(function () {
+							$('#onload-gif').remove();
+						}, 500)
+					})
+				}
+
 
 				// 初始化photoSwipe
 				initPhotoSwipeFromDOM('.photo-group-container');
 
 				// 获取到uid时
-				if(galleryData.uid) createMoment();
+				if (galleryData.uid) createMoment();
 
+			}else if(d.m !== 'success') {
+				alert('故事加载失败，请稍后重试。(e:10052)');
+				$('#onload-gifimg').remove();
+				WeixinJSBridge.call('closeWindow');
 			}
+		},
+		error: function (e) {
+			alert('故事加载失败，请稍后重试。(e:10050)');
+			$('#onload-gifimg').remove();
+			WeixinJSBridge.call('closeWindow');
 		}
 	})
 }
@@ -1203,7 +1240,9 @@ function getUrlConfig() {
 			platform: 2
 		},
 		success: function (d) {
-			console.log(d);
+			if (pokoConsole) {
+				console.log(d);
+			}
 
 			urlConfig = d.p;
 
@@ -1245,28 +1284,19 @@ function getUrlConfig() {
 				$('.toolbar-bottom').removeClass('active');
 				$('.toolbar-invitation-code').addClass('active');
 				getGallery();
-
-				//if(environment.isQq) {
-				//	if(environment.isIos) {
-				//		location.href = downloadLink.microdownload
-				//	}
-				//	if(environment.isAndroid) {
-				//		location.href = downloadLink.microdownload
-				//	}
-				//}
-
 			} else {
+				if (screenWidth < 340) {
+					$('.slogan_1').html('Us 可以和亲密的人一起记录');
+				}
 				$('.toolbar-bottom').removeClass('active');
-				$('.toolbar-download').addClass('active');
+				$('.toolbar-download-box').css('display','block');
 				getGallery();
 			}
-
-			// if(enableDesktopDebug) {
-			//   $('.toolbar-bottom').removeClass('active');
-			//   // $('.toolbar-upload').addClass('active');
-			//   $('.toolbar-download').addClass('active');
-			// }
-
+		},
+		error: function (e) {
+			alert('故事加载失败，请稍后重试。(e:10020)');
+			$('#onload-gifimg').remove();
+			WeixinJSBridge.call('closeWindow');
 		}
 	});
 }
@@ -1283,7 +1313,7 @@ $(function () {
 	 });
 
 	// 分享页，的下载条 （已换微下载）
-	$('.toolbar-download').on('click', function (e) {
+	$('.toolbar-download-box').on('click', function (e) {
 		e.preventDefault();
 		if(environment.isWeixin) { // 微信下
 			// $('.guide-to-open-in-browser').addClass('show').on('click', function () {

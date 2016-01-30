@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+	<meta charset="UTF-8">
+	<title>小组</title>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta itemprop="name" content="">
+	<meta name="description" itemprop="description" content="Us - 可以和亲密的人一起记录的APP">
+	<meta itemprop="image" content="">
+	<meta name="format-detection" content="telephone=no">
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script src="js/hide-share.js"></script>
+	<link rel="stylesheet" href="css/group.css">
+	<script src="bower_components/jquery_lazyload/jquery.lazyload.js"></script>
+	<script src="js/jquery.cookie.js"></script>
+	<script src="js/group.js?2016010401"></script>
+</head>
+<body>
+	<!--封面图-->
+    <div class="group-cover">
+		<div class="group-cover-tent"></div>
+		<div class="group-cover-content">
+			<img alt src="" width="100%" height="100%">
+			<div class="group-name"></div>
+			<div class="group-count clearfix">
+				<div>故事</div>
+				<div>0</div>
+				<div class="group-count-a">瞬间</div>
+				<div>0</div>
+			</div>
+		</div>
+	</div>
+
+	<!--小组成员数及下拉按钮-->
+	<a class="group-member-title clearfix" href="javascript:;">
+		<div>小组成员 (<p class="group-members-amount">0</p>)</div>
+		<span class="group-member-ins"></span>
+	</a>
+
+	<!--大头像块-->
+	<div class="bigimg-body">
+		<div class="bigimg-src"></div>
+		<div class="bigimg-nameandsex">
+			<p></p>
+		</div>
+		<span></span>
+		<div class="bigimg-commonevent">
+			<p></p>
+		</div>
+	</div>
+
+	<!--成员列表-->
+	<div class="group-authors">
+		<ul class="group-authors-list clearfix">
+		</ul>
+	</div>
+
+	<!--故事列表-->
+	<div class="group-event">
+		<ul class="group-figure-list">
+		</ul>
+	</div>
+
+	<!--登入弹窗-->
+	<div class="onloadtip-box">
+		<div class="onloadtip-cover-box">
+			<img alt src width="100%">
+			<div>
+				<p>你已加入Us小组‘<i></i>’，大家在这里记录了<i>0</i>个故事<i>0</i>个瞬间；“使用Us打开”可以随时随地查看、续写小组里的故事</p>
+			</div>
+		</div>
+		<div class="onloadtip-authorslist-box">
+			<div class="onloadtip-authors-list clearfix"></div>
+			<a class="onloadtip-btn" href="javascript:;">知道了</a>
+		</div>
+	</div>
+
+	<!--自适应登入弹窗-->
+	<div class="flex-onloadtip-box">
+		<div class="flex-onloadtip-cover-box">
+			<img alt src width="100%">
+			<div>
+				<p class="flex-onloadtip-text1">你已加入Us小组「<i></i>」<br>大家在这里记录了<i>0</i>个故事<i>0</i>个瞬间<br>使用Us打开可以随时随地查看、续写小组里的故事</p>
+				<p class="flex-onloadtip-text2">Us小组「<i></i>」记录了大家在一起的<i>0</i>个故事<i>0</i>个瞬间<br>加入小组即可随时随地查看、续写小组里的故事</p>
+			</div>
+		</div>
+		<div class="flex-onloadtip-authorslist-box">
+			<div class="flex-onloadtip-authors-list clearfix"></div>
+			<a class="flex-onloadtip-btn" href="javascript:;">知道了</a>
+		</div>
+	</div>
+
+	<!--复制邀请码提示框-->
+	<div class="invitecode-box">
+		<div class="invitecode-top-box">
+			<a href="javascript:;"></a>
+			<p>长按复制下方邀请码然后
+				<br>打开<i>Us</i>可加入小组</p>
+			<div class="join-group-code"></div>
+		</div>
+		<a class="invitecode-btn">打开Us</a>
+	</div>
+
+	<div class="bottom-banner-box">
+		<a href="javascript:;"></a>
+	</div>
+
+	<div class="toolbar-download-box">
+		<a class="toolbar-download-container" href="javascript:;">
+			<img class="logo" src="images/icon.png" alt="US logo" width="36" height="36">
+			<div class="slogan">
+				<p class="slogan_1">Us 可以和亲密的人一起记录的APP</p>
+				<p class="slogan_2">If not now, when? If not us, who?</p>
+			</div>
+			<div class="toolbar-download-btn">下载Us</div>
+		</a>
+	</div>
+
+	<div id='onload-gif'>
+		<!-- <img id="onload-gifimg" alt src="images/gifimg.gif" height="40" width="40"> -->
+	</div>
+
+	<div class="back-drop"></div>
+
+	<script>
+		(function(){
+			var oNloadgif = document.getElementById('onload-gif');
+			var oImg = new Image();
+			oImg.src='images/gifimg.gif';
+			oImg.id = 'onload-gifimg';
+			oImg.width = '40';
+			oImg.height = '40';
+			oImg.alt = '';
+			oNloadgif.appendChild(oImg);
+		})()
+	</script>
+</body>
+</html>
