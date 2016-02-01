@@ -19,6 +19,7 @@ if(location.protocol === 'file:') {
 var urlConfig = {};
 var memberList = {};
 var versionNumber = '1.1.0';
+var versionIntegerNumber = 2;
 var screenWidth = $(window).width();  //屏幕宽度
 var screenHeight = $(window).height(); //屏幕高度
 
@@ -323,6 +324,7 @@ function createMoment() {
 			event_id: galleryData.eventId,
 			login_uid: galleryData.uid,
 			session_key: galleryData.sessionKey,
+			version: versionIntegerNumber,
 			platform: 2
 		},
 		success: function (d) {
@@ -341,6 +343,10 @@ function createMoment() {
 			}else {
 				uploadFile();
 			}
+		},
+		error: function (e) {
+			//alert(JSON.stringify(e));
+			alert('上传功能加载失败(e:10060)');
 		}
 	})
 }
@@ -433,6 +439,7 @@ function uploadFile() {
 					formData.event_id = galleryData.eventId;
 					formData.session_key = galleryData.sessionKey;
 					formData.size = img.width + 'x' + img.height;
+					formData.version = versionIntegerNumber;
 					data.formData = formData;
 
 					console.log(data);
@@ -523,6 +530,7 @@ function commitUpload(picture_ids) {
 			login_uid: galleryData.uid,
 			session_key: galleryData.sessionKey,
 			picture_ids: picture_ids,
+			version: versionIntegerNumber,
 			platform: 2
 		},
 		// error: function(){
@@ -561,6 +569,7 @@ function commitWeChatUpload(picture_ids) {
 			login_uid: galleryData.uid,
 			session_key: galleryData.sessionKey,
 			picture_ids: picture_ids,
+			version: versionIntegerNumber,
 			platform: 2
 		},
 		success: function (d) {

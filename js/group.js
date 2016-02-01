@@ -7,6 +7,7 @@ var pokoConsole = false;
 var urlConfig = {};		//url信息
 var memberList = [];	//成员列表
 var versionNumber = '1.1.0';	//版本号
+var versionIntegerNumber = 2;
 var screenWidth = $(window).width();  //屏幕宽度
 var screenHeight = $(window).height();  //屏幕高度
 
@@ -461,6 +462,7 @@ function buildDom() {
 		data: {
 			code: getQueryStringArgs().invitation_code,
 			login_uid: galleryData.uid,
+			version: versionIntegerNumber,
 			platform: 2
 		},
 		success: function (d) {
