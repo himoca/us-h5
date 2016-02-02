@@ -207,11 +207,7 @@ function loginCheck() {
 			distributor: 'web'
 		},
 		success: function (d) {
-			if (d.c !== 200) {
-				alert('故事不存在(e:10011)');
-				$('#onload-gifimg').remove();
-				WeixinJSBridge.call('closeWindow');
-			}else if (d.p.uid && d.p.avatar && d.p.session_key && d.p.nickname && d.p.session_key !== 'false') {
+			if (d.p.uid && d.p.avatar && d.p.session_key && d.p.nickname && d.p.session_key !== 'false' && d.c == 200) {
 				galleryData.sessionKey = d.p.session_key;
 				galleryData.avatar = d.p.avatar;
 				galleryData.uid = d.p.uid;
@@ -230,6 +226,7 @@ function loginCheck() {
 			}
 		},
 		error: function(e){
+			//alert(JSON.stringify(e));
 			alert('故事不存在(e:10012)');
 			$('#onload-gifimg').remove();
 			WeixinJSBridge.call('closeWindow');
