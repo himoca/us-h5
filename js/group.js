@@ -208,7 +208,11 @@ function appearAuthorsList() {
 	var singlelineMemberNum = parseInt((screenWidth - 12) / 44);  //单独一行的用户数
 	var allMemberNum = $('.group-authors').find('li').length;  //获取总人数
 	if ((allMemberNum - singlelineMemberNum) > 0) {
-		var lineNumber = parseInt(allMemberNum / singlelineMemberNum) + 1;  //行数
+		if ((allMemberNum % singlelineMemberNum) == 0) {
+			var lineNumber = parseInt(allMemberNum / singlelineMemberNum);
+		}else {
+			var lineNumber = parseInt(allMemberNum / singlelineMemberNum) + 1;  //行数
+		}
 	}
 	$('.group-members-amount').html(allMemberNum);		//写入总人数
 	$('.group-event').css('opacity', '1');
@@ -483,11 +487,13 @@ function buildDom() {
 				var $body = $('body');
 				document.title = d.p.group.name;
 				// hack在微信等webview中无法修改document.title的情况
-				var $iframe = $('<iframe src="/favicon.ico"></iframe>').on('load', function () {
-					setTimeout(function () {
-						$iframe.off('load').remove()
-					}, 0)
-				}).appendTo($body);
+				if (environment.isWeixin) {
+					var $iframe = $('<iframe src="/favicon.ico"></iframe>').on('load', function () {
+						setTimeout(function () {
+							$iframe.off('load').remove()
+						}, 0)
+					}).appendTo($body);
+				}
 
 				//保存封面图和名称用于分享
 				galleryData.cover = d.p.group.coverpage;
