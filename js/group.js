@@ -222,17 +222,24 @@ function appearAuthorsList() {
 		}
 		$('.group-event').css('transform', 'translateY(-' + 46 * (lineNumber - 1) + 'px)');
 		$('.group-event').css('-webkit-transform', 'translateY(-' + 46 * (lineNumber - 1) + 'px)');
+		if (screenWidth <= 768) {
+			$('.group-event').css({'position':'absolute','left':'0','right':'0'});
+		}else {
+			$('.group-event').css({'position':'absolute','left':(screenWidth-768)/2 + 'px','right':(screenWidth-768)/2 + 'px'});
+		}
 
 		var groupEventMark = 0;
-		$('.group-member-title').on('touchstart', function (e) {
+		var groupEventTime = null;
+		$('.group-member-title').bind('touchstart', function (e) {
 			e.preventDefault();
+			clearTimeout(groupEventTime);
 			if (groupEventMark == 0) {
 				groupEventMark = 1;
 				$('.group-event').css('transform', 'translateY(0px)');
 				$('.group-event').css('-webkit-transform', 'translateY(0px)');
 				$('.group-member-ins').css('transform', 'rotate(180deg)');
 				$('.group-member-ins').css('-webkit-transform', 'rotate(180deg)');
-				setTimeout(function () {
+				groupEventTime = setTimeout(function () {
 					for (var i = singlelineMemberNum; i < allMemberNum; i++) {
 						$('.group-authors').find('li').eq(i).css('opacity', '1');
 					}
@@ -242,12 +249,12 @@ function appearAuthorsList() {
 				for (var i = singlelineMemberNum; i < allMemberNum; i++) {
 					$('.group-authors').find('li').eq(i).css('opacity', '0');
 				}
-				setTimeout(function () {
+				groupEventTime = setTimeout(function () {
 					$('.group-event').css('transform', 'translateY(-' + 46 * (lineNumber - 1) + 'px)');
 					$('.group-event').css('-webkit-transform', 'translateY(-' + 46 * (lineNumber - 1) + 'px)');
 					$('.group-member-ins').css('transform', 'rotate(0deg)');
 					$('.group-member-ins').css('-webkit-transform', 'rotate(0deg)');
-				}, 500)
+				}, 500);
 			}
 		})
 	} else {
