@@ -205,7 +205,9 @@ function getRetinaImgSize(size) {
 
 //显示/隐藏成员列表
 function appearAuthorsList() {
-	var singlelineMemberNum = parseInt((screenWidth - 12) / 44);  //单独一行的用户数
+	var useWidth = screenWidth;
+	useWidth = useWidth >= 768 ? useWidth : 768;
+	var singlelineMemberNum = parseInt((useWidth - 12) / 44);  //单独一行的用户数
 	var allMemberNum = $('.group-authors').find('li').length;  //获取总人数
 	if ((allMemberNum - singlelineMemberNum) > 0) {
 		if ((allMemberNum % singlelineMemberNum) == 0) {
@@ -230,7 +232,7 @@ function appearAuthorsList() {
 
 		var groupEventMark = 0;
 		var groupEventTime = null;
-		$('.group-member-title').bind('touchstart', function (e) {
+		$('.group-member-title').bind('touchstart mousedown', function (e) {
 			e.preventDefault();
 			clearTimeout(groupEventTime);
 			if (groupEventMark == 0) {
@@ -264,7 +266,7 @@ function appearAuthorsList() {
 
 // 弹出用户大头像
 function showAuthorBigImg(name, uid, src1, src2) {
-	if (environment.isWeixin && uid !== galleryData.uid) {
+	if (environment.isWeixin && uid !== galleryData.uid && getQueryStringArgs().target == 'invite') {
 		$.ajax({
 			url: urlProtocol + urlConfig.init_domain + '/Us/User/getProfile',
 			dataType: 'json',
@@ -306,7 +308,7 @@ function showAuthorBigImg(name, uid, src1, src2) {
 		$('.bigimg-src').append('<img class="bigimg-clear" alt src="' + src1 + "250x250" + src2 + '" width="250" height="250">');
 		$('.back-drop').css('background', 'rgba(0, 0, 0, 0.4)').addClass('show');
 		$('.bigimg-body').addClass('show').removeClass('showdisappear');
-		$('.back-drop').on('touchstart', function (e) {
+		$('.back-drop').on('touchstart mousedown', function (e) {
 			e.preventDefault();
 			$('.back-drop').removeClass('show');
 			$('.bigimg-body').removeClass('show').addClass('showdisappear');
