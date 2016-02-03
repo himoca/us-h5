@@ -206,7 +206,7 @@ function getRetinaImgSize(size) {
 //显示/隐藏成员列表
 function appearAuthorsList() {
 	var useWidth = screenWidth;
-	useWidth = useWidth >= 768 ? useWidth : 768;
+	useWidth = useWidth >= 768 ? 768 : useWidth;
 	var singlelineMemberNum = parseInt((useWidth - 12) / 44);  //单独一行的用户数
 	var allMemberNum = $('.group-authors').find('li').length;  //获取总人数
 	if ((allMemberNum - singlelineMemberNum) > 0) {
