@@ -125,16 +125,16 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
     // Pass data to PhotoSwipe and initialize it
     gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
 
-    gallery.listen('updateScrollOffset', function(_offset) {
-
-      var r = gallery.template.getBoundingClientRect();
-      // console.log(r);
-      _offset.x = 0;
-      _offset.y = 0;
-      // console.log(_offset);
-      //console.log(gallery);
-
-    });
+    //gallery.listen('updateScrollOffset', function(_offset) {
+	//
+    //  var r = gallery.template.getBoundingClientRect();
+    //  // console.log(r);
+    //  _offset.x = 0;
+    //  _offset.y = 0;
+    //  // console.log(_offset);
+    //  //console.log(gallery);
+	//
+    //});
 
     // gallery.listen('afterchange', function () {
     //   console.log('改变后');

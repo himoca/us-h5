@@ -1795,87 +1795,87 @@ var _gestureStartTime,
 		if(_isZooming && numPoints > 1) {
 			// pokola zoom
 
-			 //// Handle behaviour for more than 1 point
-			 //
-			 //_currPoint.x = p.x;
-			 //_currPoint.y = p.y;
-			 //
-			 //// check if one of two points changed
-			 //if( !delta.x && !delta.y && _isEqualPoints(_currentPoints[1], p2) ) {
-			 //	return;
-			 //}
-			 //
-			 //_equalizePoints(p2, _currentPoints[1]);
-			 //
-			 //
-			 //if(!_zoomStarted) {
-			 //	_zoomStarted = true;
-			 //	_shout('zoomGestureStarted');
-			 //}
-			 //
-			 //// Distance between two points
-			 //var pointsDistance = _calculatePointsDistance(p,p2);
-			 //
-			 //var zoomLevel = _calculateZoomLevel(pointsDistance);
-			 //
-			 //// slightly over the of initial zoom level
-			 //if(zoomLevel > self.currItem.initialZoomLevel + self.currItem.initialZoomLevel / 15) {
-			 //	_wasOverInitialZoom = true;
-			 //}
-			 //
-			 //// Apply the friction if zoom level is out of the bounds
-			 //var zoomFriction = 1,
-			 //	minZoomLevel = _getMinZoomLevel(),
-			 //	maxZoomLevel = _getMaxZoomLevel();
-			 //
-			 //if ( zoomLevel < minZoomLevel ) {
-				//
-			 //	if(_options.pinchToClose && !_wasOverInitialZoom && _startZoomLevel <= self.currItem.initialZoomLevel) {
-			 //		// fade out background if zooming out
-			 //		var minusDiff = minZoomLevel - zoomLevel;
-			 //		var percent = 1 - minusDiff / (minZoomLevel / 1.2);
-			 //
-			 //		_applyBgOpacity(percent);
-			 //		_shout('onPinchClose', percent);
-			 //		_opacityChanged = true;
-			 //	} else {
-			 //		zoomFriction = (minZoomLevel - zoomLevel) / minZoomLevel;
-			 //		if(zoomFriction > 1) {
-			 //			zoomFriction = 1;
-			 //		}
-			 //		zoomLevel = minZoomLevel - zoomFriction * (minZoomLevel / 3);
-			 //	}
-				//
-			 //} else if ( zoomLevel > maxZoomLevel ) {
-			 //	// 1.5 - extra zoom level above the max. E.g. if max is x6, real max 6 + 1.5 = 7.5
-			 //	zoomFriction = (zoomLevel - maxZoomLevel) / ( minZoomLevel * 6 );
-			 //	if(zoomFriction > 1) {
-			 //		zoomFriction = 1;
-			 //	}
-			 //	zoomLevel = maxZoomLevel + zoomFriction * minZoomLevel;
-			 //}
-			 //
-			 //if(zoomFriction < 0) {
-			 //	zoomFriction = 0;
-			 //}
-			 //
-			 //// distance between touch points after friction is applied
-			 //_currPointsDistance = pointsDistance;
-			 //
-			 //// _centerPoint - The point in the middle of two pointers
-			 //_findCenterOfPoints(p, p2, _centerPoint);
-			 //
-			 //// paning with two pointers pressed
-			 //_currPanDist.x += _centerPoint.x - _currCenterPoint.x;
-			 //_currPanDist.y += _centerPoint.y - _currCenterPoint.y;
-			 //_equalizePoints(_currCenterPoint, _centerPoint);
-			 //
-			 //_panOffset.x = _calculatePanOffset('x', zoomLevel);
-			 //_panOffset.y = _calculatePanOffset('y', zoomLevel);
-			 //
-			 //_isZoomingIn = zoomLevel > _currZoomLevel;
-			 //_currZoomLevel = zoomLevel;
-			 //_applyCurrentZoomPan();
+			 // Handle behaviour for more than 1 point
+
+			 _currPoint.x = p.x;
+			 _currPoint.y = p.y;
+
+			 // check if one of two points changed
+			 if( !delta.x && !delta.y && _isEqualPoints(_currentPoints[1], p2) ) {
+			 	return;
+			 }
+
+			 _equalizePoints(p2, _currentPoints[1]);
+
+
+			 if(!_zoomStarted) {
+			 	_zoomStarted = true;
+			 	_shout('zoomGestureStarted');
+			 }
+
+			 // Distance between two points
+			 var pointsDistance = _calculatePointsDistance(p,p2);
+
+			 var zoomLevel = _calculateZoomLevel(pointsDistance);
+
+			 // slightly over the of initial zoom level
+			 if(zoomLevel > self.currItem.initialZoomLevel + self.currItem.initialZoomLevel / 15) {
+			 	_wasOverInitialZoom = true;
+			 }
+
+			 // Apply the friction if zoom level is out of the bounds
+			 var zoomFriction = 1,
+			 	minZoomLevel = _getMinZoomLevel(),
+			 	maxZoomLevel = _getMaxZoomLevel();
+
+			 if ( zoomLevel < minZoomLevel ) {
+
+			 	if(_options.pinchToClose && !_wasOverInitialZoom && _startZoomLevel <= self.currItem.initialZoomLevel) {
+			 		// fade out background if zooming out
+			 		var minusDiff = minZoomLevel - zoomLevel;
+			 		var percent = 1 - minusDiff / (minZoomLevel / 1.2);
+
+			 		_applyBgOpacity(percent);
+			 		_shout('onPinchClose', percent);
+			 		_opacityChanged = true;
+			 	} else {
+			 		zoomFriction = (minZoomLevel - zoomLevel) / minZoomLevel;
+			 		if(zoomFriction > 1) {
+			 			zoomFriction = 1;
+			 		}
+			 		zoomLevel = minZoomLevel - zoomFriction * (minZoomLevel / 3);
+			 	}
+
+			 } else if ( zoomLevel > maxZoomLevel ) {
+			 	// 1.5 - extra zoom level above the max. E.g. if max is x6, real max 6 + 1.5 = 7.5
+			 	zoomFriction = (zoomLevel - maxZoomLevel) / ( minZoomLevel * 6 );
+			 	if(zoomFriction > 1) {
+			 		zoomFriction = 1;
+			 	}
+			 	zoomLevel = maxZoomLevel + zoomFriction * minZoomLevel;
+			 }
+
+			 if(zoomFriction < 0) {
+			 	zoomFriction = 0;
+			 }
+
+			 // distance between touch points after friction is applied
+			 _currPointsDistance = pointsDistance;
+
+			 // _centerPoint - The point in the middle of two pointers
+			 _findCenterOfPoints(p, p2, _centerPoint);
+
+			 // paning with two pointers pressed
+			 _currPanDist.x += _centerPoint.x - _currCenterPoint.x;
+			 _currPanDist.y += _centerPoint.y - _currCenterPoint.y;
+			 _equalizePoints(_currCenterPoint, _centerPoint);
+
+			 _panOffset.x = _calculatePanOffset('x', zoomLevel);
+			 _panOffset.y = _calculatePanOffset('y', zoomLevel);
+
+			 _isZoomingIn = zoomLevel > _currZoomLevel;
+			 _currZoomLevel = zoomLevel;
+			 _applyCurrentZoomPan();
 
 		} else {
 
