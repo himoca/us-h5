@@ -2,11 +2,11 @@
 
 var apiUrl = location.protocol + '//' + location.host + '/Us/system/getDomainInfo';
 var urlProtocol = location.protocol + '//';
-var pokoConsole = false;
+var pokoConsole = true;
 
 var urlConfig = {};		//url信息
 var memberList = [];	//成员列表
-var versionNumber = '1.1.0';	//版本号
+var versionNumber = '1.3.0';	//版本号
 var versionIntegerNumber = 2;
 var screenWidth = $(window).width();  //屏幕宽度
 var screenHeight = $(window).height();  //屏幕高度
@@ -42,6 +42,7 @@ var galleryData = {
 	eventId: null,
 	invitationCode: null,
 	uid: null,
+	gid: null,
 	nickname: null,
 	avatar: null,
 	sessionKey: null,
@@ -281,14 +282,19 @@ function showAuthorBigImg(name, uid, src1, src2) {
 				if (pokoConsole) {
 					console.log(d);
 				}
+				//alert(JSON.stringify(d));
 
 				if (d.p.user.gender == '0') {
 					var authorSex = '女';
 				} else if (d.p.user.gender == '1') {
 					var authorSex = '男';
 				}
-				$('.bigimg-nameandsex').find('p').html(name + ' , ' + authorSex);
-				$('.bigimg-commonevent').find('p').html(d.p.event.content);
+				$('.bigimg-nameandsex').find('p').html(name + ' , ' + authorSex).emoji();
+				if(!("event" in d.p)) {
+					$('.bigimg-commonevent').find('p').html('').emoji();
+				}else {
+					$('.bigimg-commonevent').find('p').html(d.p.event.content).emoji();
+				}
 				$('.bigimg-src').append('<img alt src="' + src1 + "30x30" + src2 + '" width="250" height="250">');
 				$('.bigimg-src').append('<img class="bigimg-clear" alt src="' + src1 + "250x250" + src2 + '" width="250" height="250">');
 				$('.back-drop').css('background', 'rgba(0, 0, 0, 0.4)').addClass('show');
@@ -299,11 +305,15 @@ function showAuthorBigImg(name, uid, src1, src2) {
 					$('.bigimg-body').removeClass('show').addClass('showdisappear');
 					$('.bigimg-src').find('img').remove();
 				})
+			},
+			error: function(e) {
+				alert('获取头像信息失败(e:20040)');
+				alert(JSON.stringify(e));
 			}
 		})
 	} else {
-		$('.bigimg-nameandsex').find('p').html(name);
-		$('.bigimg-commonevent').find('p').html('');
+		$('.bigimg-nameandsex').find('p').html(name).emoji();
+		$('.bigimg-commonevent').find('p').html('').emoji();
 		$('.bigimg-src').append('<img alt src="' + src1 + "30x30" + src2 + '" width="250" height="250">');
 		$('.bigimg-src').append('<img class="bigimg-clear" alt src="' + src1 + "250x250" + src2 + '" width="250" height="250">');
 		$('.back-drop').css('background', 'rgba(0, 0, 0, 0.4)').addClass('show');
@@ -467,6 +477,214 @@ function getJsSdkData() {
 	})
 }
 
+//确认时间
+function bitlistCreateTime(time){
+	var createTimeYear = new Date(parseInt(time)).getFullYear();
+	var createTime;
+	if (createTimeYear === new Date().getFullYear()) {
+		createTime = moment(parseInt(time)).format('MM[-]DD HH:mm');
+	} else {
+		createTime = moment(parseInt(time)).format('YYYY-MM-DD HH:mm');
+	}
+	return createTime;
+}
+
+//显示点滴
+var showBitListCheck = true;
+function showBitList() {
+	if(showBitListCheck) {
+		$.ajax({
+			url: urlProtocol + urlConfig.init_domain + '/Us/Moment/eventMomentList',
+			dataType: 'json',
+			data: {
+				login_uid: galleryData.uid,
+				gid: galleryData.gid,
+				platform: 2
+			},
+			success: function (d) {
+				showBitListCheck = false;
+				if (pokoConsole) {
+					console.log(d);
+				}
+
+				for (var i=0; i< d.p.list.length; i++) {
+					var listindex = i;
+					var bitlist = d.p.list[i];
+
+					var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
+					var photoFile = bitlist.avatar;
+					var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
+					var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
+					var width = getRetinaImgSize(40);
+					var height = width;
+					var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
+
+					//创建每个点滴
+					$('.group-bit-list').append(
+						'<li>' +
+							'<img class="group-bit-authorsmallimg" src="'+trueImgUrl+'" alt="" width="40" height="40">' +
+							'<div class="group-bit-head">' +
+								'<p class="group-bit-titletext"><i class="group-bit-authornicname group-bit-willemoji">'+bitlist.nickname+'</i> 在点滴中上传了<i class="group-bit-titletextgreen">'+bitlist.picture.length+'张</i>照片</p>' +
+								'<p class="group-bit-time">'+bitlistCreateTime(bitlist.create_time)+'</p>' +
+								'<div class="group-bit-contentbox group-bit-willemoji"></div>' +
+								'<a class="group-bit-contentbtn" href="javascript:;">更多</a>' +
+							'</div>' +
+							'<div class="group-bit-imgbox"><div class="group-bit-imgdrawer clearfix"></div></div>' +
+							'<div class="group-bit-commentlikebtn"></div>' +
+							'<div class="group-bit-likeauthorsbox clearfix"></div>' +
+							'<div class="group-bit-commentauthorsbox group-bit-willemoji"></div>' +
+							'<span class="group-bit-bottomborderline"></span>' +
+						'</li>'
+					);
+
+					//添加照片描述
+					var bitlistContentall = '';
+					for (var j=0; j< bitlist.picture.length; j++) {
+						var bitlistContent = bitlist.picture[j].content;
+						bitlistContentall = bitlistContentall+bitlistContent;
+						if(bitlistContent !== '' && bitlist.picture.length !== 1) {
+							$('.group-bit-contentbox').eq(listindex).append('<i class="group-bit-contentnum">'+(j+1)+'.</i><p class="group-bit-content">'+bitlistContent+' </p>');
+						}else if(bitlistContent !== '' && bitlist.picture.length == 1) {
+							$('.group-bit-contentbox').eq(listindex).append('<p class="group-bit-content">'+bitlistContent+'</p>');
+						}
+					}
+					if(bitlistContentall == ''){
+						$('.group-bit-contentbox').eq(listindex).css('display','none');
+						$('.group-bit-contentbtn').eq(listindex).css('display','none');
+					}
+
+					//添加照片
+					var bitlistPictureLength = bitlist.picture.length;
+					if(bitlistPictureLength == 1) {			//单张
+						var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
+						var photoFile = bitlist.picture[0].url;
+						var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
+						var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
+						var sizeInterceptPosition = bitlist.picture[0].size.indexOf('x');
+						var wareWidth = parseInt(bitlist.picture[0].size.substring(0,sizeInterceptPosition));  //图片真实宽
+						var wareHeight = parseInt(bitlist.picture[0].size.substring(sizeInterceptPosition+1));  //图片真实高
+						if(wareHeight > wareWidth) {
+							var height = getRetinaImgSize(120);
+							var width = parseInt(height*(wareWidth/wareHeight));
+						}else {
+							var height = getRetinaImgSize(100);
+							var width = parseInt(height*(wareWidth/wareHeight));
+						}
+						var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
+							$('.group-bit-imgdrawer').eq(listindex).append('<div class="group-bit-pictureimgback" style="width: '+width+'px; height: '+height+'px;"><img class="group-bit-pictureimg" data-original="' + trueImgUrl + '" alt=""></div>').css('padding', '0 10px 0 60px');
+					}else {				//多张
+						for (var j=0; j<bitlist.picture.length; j++) {
+							var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
+							var photoFile = bitlist.picture[j].url;
+							var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
+							var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
+							var sizeInterceptPosition = bitlist.picture[j].size.indexOf('x');
+							var wareWidth = parseInt(bitlist.picture[j].size.substring(0,sizeInterceptPosition));  //图片真实宽
+							var wareHeight = parseInt(bitlist.picture[j].size.substring(sizeInterceptPosition+1));  //图片真实高
+							var height = getRetinaImgSize(120);
+							var width = getRetinaImgSize(140);
+							var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
+							if(window.devicePixelRatio >= 2) {
+								var cssHeight = height/2;
+								var cssWidth = width/2;
+								$('.group-bit-imgdrawer').eq(listindex).addClass('group-bit-imgcandrawer').append('<div class="group-bit-pictureimgback" style="width: '+cssWidth+'px; height: '+cssHeight+'px;"><img class="group-bit-pictureimg" data-original="'+trueImgUrl+'" alt="" width="'+cssWidth+'" height="'+cssHeight+'"><span>'+(j+1)+'</span></div>')
+							}else {
+								$('.group-bit-imgdrawer').eq(listindex).addClass('group-bit-imgcandrawer').append('<div class="group-bit-pictureimgback" style="width: '+width+'px; height: '+height+'px;"><img class="group-bit-pictureimg" data-original="'+trueImgUrl+'" alt="" width="'+width+'" height="'+height+'"><span>'+(j+1)+'</span></div>')
+							}
+						}
+					}
+
+
+					//添加点赞头像和数量
+					if(bitlist.like_count !== 0) {
+						for(var j=0; j< bitlist.like.length; j++) {
+							var bitlistlikepropertiesuid = bitlist.like[j].properties.uid;
+							var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
+							var photoFile = d.p.properties[bitlistlikepropertiesuid].avatar;
+							var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
+							var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
+							var width = getRetinaImgSize(30);
+							var height = width;
+							var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
+							$('.group-bit-likeauthorsbox').eq(listindex).append('<img class="group-bit-likeauthorimg" src="'+trueImgUrl+'" alt="" width="30" height="30">')
+						}
+						$('.group-bit-likeauthorsbox').eq(listindex).append('<span class="group-bit-likeauthorsnum">'+bitlist.like_count+'</span>');
+					}else {
+						$('.group-bit-likeauthorsbox').eq(listindex).css('display','none');
+					}
+
+					//添加评论
+					if(bitlist.comment_count !== 0) {
+						for(var j=0; j<bitlist.comment.length; j++) {
+							if(!("to" in bitlist.comment[j].properties)){
+								var commentpropertiesuid = bitlist.comment[j].properties.uid;
+								var commentnickname = d.p.properties[commentpropertiesuid].nickname;
+								$('.group-bit-commentauthorsbox').eq(listindex).append('<span class="group-bit-onecomment"><i class="group-bit-respondents">'+commentnickname+'</i><p class="group-bit-commenttext">: '+bitlist.comment[j].properties.content+'</p></span>')
+							}else {
+								var commentpropertiesuid = bitlist.comment[j].properties.uid;
+								var commentedpropertiesuid = bitlist.comment[j].properties.to;
+								var commentnickname = d.p.properties[commentpropertiesuid].nickname;
+								var commentednickname = d.p.properties[commentedpropertiesuid].nickname;
+								$('.group-bit-commentauthorsbox').eq(listindex).append('<span class="group-bit-onecomment"><i class="group-bit-respondents">'+commentnickname+'</i><p class="group-bit-huifu"> 回复 </p><i class="group-bit-selecter">'+commentednickname+'</i><p class="group-bit-commenttext">: '+bitlist.comment[j].properties.content+'</p></span>');
+							}
+						}
+					}else {
+						$('.group-bit-commentauthorsbox').eq(listindex).css('display','none');
+					}
+
+				}
+				//描述多余三行时收起
+				$('.group-bit-contentbox').each(function(index){
+					if($(this).height() > 60) {
+						$(this).css('height','60px');
+					}else {
+						$('.group-bit-contentbtn').eq(index).css('display','none');
+					}
+				});
+				//描述更多/收起切换
+				$('.group-bit-contentbtn').on('click',function(e){
+					e.preventDefault();
+					if($(this).html() == '更多'){
+						$(this).html('收起').prev().css('height','auto');
+					}else if($(this).html() == '收起'){
+						$(this).html('更多').prev().css('height','60px');
+					}
+				});
+				//转换emoji表情
+				$('.group-bit-willemoji').each(function(){
+					$(this).emoji();
+				});
+
+
+				$("img").lazyload({
+					threshold: 100,
+					failurelimit: 9999,
+					effect: "fadeIn",
+					placeholder: 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw=='
+				});
+
+				var imgcandrawerTime = null;
+				$('.group-bit-imgcandrawer').on('touchmove',function(e){
+					$(this).find('span').css('opacity','1');
+
+				}).on('touchend',function(e){
+					var $that = $(this);
+					$that.find("img").lazyload({
+						placeholder: 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw=='
+					});
+					clearTimeout(imgcandrawerTime);
+					imgcandrawerTime = setTimeout(function(){
+						$('.group-bit-imgcandrawer').find('span').css('opacity','0');
+					},2000);
+				})
+			},
+			error: function(e){
+				alert('点滴加载失败，请稍后重试。(e:20060)');
+			}
+		})
+	}
+}
+
 // 创建DOM结构
 function buildDom() {
 	$.ajax({
@@ -510,6 +728,10 @@ function buildDom() {
 				galleryData.invitationCode = getQueryStringArgs().invitation_code;
 				galleryData.e_num = d.p.group.e_num;
 				galleryData.p_num = d.p.group.p_num;
+				if(galleryData.uid == null) {
+					galleryData.uid = d.p.group.owner;
+				}
+				galleryData.gid = d.p.group.gid;
 
 				//成员特殊处理
 				var ownerMemberUid = d.p.group.owner;
@@ -597,7 +819,7 @@ function buildDom() {
 
 				//封面文字
 				if (!environment.isWeixin) {
-					$('.group-name').html(d.p.group.name);
+					$('.group-name').find('p').html(d.p.group.name);
 				}
 				$('.group-count').find('div').eq(1).html(d.p.group.e_num);
 				$('.group-count').find('div').eq(3).html(d.p.group.p_num);
@@ -644,9 +866,36 @@ function buildDom() {
 						startDateDay = startDate.getDate();
 					var eventTime = startDateMonth + '.' + startDateDay + ' ' + startDateYear;
 					var eventInvitationCode = d.p.event.list[i].invitation_code;
-					$('.group-figure-list').append('<li><div class="group-figure"><div class="group-event-content"><a class="group-event-box" href="javascript:;" data-code="' + eventInvitationCode + '"><img alt data-original="' + trueImgUrl + '" width="100%" height="100%"><div class="group-event-imgmask"></div><div class="group-event-dataname"><p class="group-event-data">' + eventTime + '</p><p class="group-event-name">' + d.p.event.list[i].name + '</p></div></a></div></div></li>');
+					$('.group-figure-list').append('<li><div class="group-figure"><div class="group-event-content"><a class="group-event-box" href="javascript:;" data-code="' + eventInvitationCode + '"><img alt data-original="' + trueImgUrl + '" width="100%" height="100%"><div class="group-event-imgmask"></div><div class="group-event-dataname"><p class="group-event-data">' + eventTime + '</p><p class="group-event-name replace-emoji">' + d.p.event.list[i].name + '</p></div></a></div></div></li>');
 				}
 				jumpToEvent(d);
+
+				$('.replace-emoji').each(function(i, d){
+					$(d).emoji();
+				});
+
+				var groupListbtnNum = 1;
+				$('.group-figure-listbtn').on('touchstart',function(e){
+					e.preventDefault();
+					if(groupListbtnNum == 0) {
+						groupListbtnNum = 1;
+						$('.group-bit-listbtn').removeClass('select');
+						$('.group-bit-list').css('display','none');
+						$('.group-figure-list').css('display','block');
+						$(this).addClass('select');
+					}
+				});
+				$('.group-bit-listbtn').on('touchstart',function(e){
+					e.preventDefault();
+					if(groupListbtnNum == 1) {
+						groupListbtnNum = 0;
+						$('.group-figure-listbtn').removeClass('select');
+						$('.group-figure-list').css('display','none');
+						$('.group-bit-list').css('display','block');
+						$(this).addClass('select');
+						showBitList();
+					}
+				});
 
 
 				// 懒加载
@@ -666,52 +915,6 @@ function buildDom() {
 	})
 }
 
-// 获取url信息
-function getUrlConfig() {
-	$.ajax({
-		url: apiUrl,
-		dataType: 'json',
-		data: {
-			version: 1,
-			platform: 2
-		},
-		success: function (d) {
-			if (pokoConsole) {
-				console.log(d);
-			}
-
-			urlConfig = d.p;
-
-			$.each(d.p, function (key, value) {
-				if (typeof value === 'string' && /^https/.test(value)) {
-					urlConfig[key] = /^https:\/\/(.*)/.exec(value)[1]
-				}
-			});
-
-			if (urlConfig.init_domain === 'app.himoca.com:9990') {
-				urlConfig.init_domain = 'app.himoca.com';
-				urlConfig.upload_domain = 'app.himoca.com';
-			}
-
-			// 如果在微信中且得到code后，则触发 登录 和 获取微信配置信息
-			if (environment.isWeixin && environment.isWeixinLogin && loginMarkKey !== 'CheckCheck') {
-				// 注册
-				register();
-			} else if (environment.isWeixin && environment.isWeixinLogin && loginMarkKey == 'CheckCheck') {
-				loginCheck();
-			} else if (!environment.isWeixin && getQueryStringArgs().target == 'invite') {
-				buildDom();
-			} else if (getQueryStringArgs().target == 'share') {
-				buildDom();
-			}
-		},
-		error: function (e) {
-			alert('小组加载失败，请稍后重试。(e:20020)');
-			$('#onload-gifimg').remove();
-			WeixinJSBridge.call('closeWindow');
-		}
-	})
-}
 
 
 //取消双击bug
@@ -843,9 +1046,59 @@ function loginCheck() {
 	})
 }
 
+// 获取url信息
+function getUrlConfig() {
+	$.ajax({
+		url: apiUrl,
+		dataType: 'json',
+		data: {
+			version: 1,
+			platform: 2
+		},
+		success: function (d) {
+			if (pokoConsole) {
+				console.log(d);
+			}
+
+			urlConfig = d.p;
+
+			$.each(d.p, function (key, value) {
+				if (typeof value === 'string' && /^https/.test(value)) {
+					urlConfig[key] = /^https:\/\/(.*)/.exec(value)[1]
+				}
+			});
+
+			if (urlConfig.init_domain === 'app.himoca.com:9990') {
+				urlConfig.init_domain = 'app.himoca.com';
+				urlConfig.upload_domain = 'app.himoca.com';
+			}
+
+			cancelDoubleTapBug();
+
+			// 如果在微信中且得到code后，则触发 登录 和 获取微信配置信息
+			if (environment.isWeixin && environment.isWeixinLogin && loginMarkKey !== 'CheckCheck') {
+				// 注册
+				register();
+			} else if (environment.isWeixin && environment.isWeixinLogin && loginMarkKey == 'CheckCheck') {
+				loginCheck();
+			} else if (!environment.isWeixin && getQueryStringArgs().target == 'invite') {
+				buildDom();
+			} else if (getQueryStringArgs().target == 'share') {
+				buildDom();
+			}
+		},
+		error: function (e) {
+			alert('小组加载失败，请稍后重试。(e:20020)');
+			$('#onload-gifimg').remove();
+			WeixinJSBridge.call('closeWindow');
+		}
+	})
+}
+
+
 //第一步运行
 $(function () {
-	cancelDoubleTapBug();
+
 	getUrlConfig();
 
 	$('#onload-gif').on('touchstart', function (e) {

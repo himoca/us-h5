@@ -28,6 +28,7 @@
 	<script src="bower_components/blueimp-file-upload/js/jquery.fileupload-process.js"></script>
 	<script src="bower_components/blueimp-file-upload/js/jquery.fileupload-image.js"></script>
 	<script src="js/jquery.cookie.js"></script>
+	<script src="js/jquery.emoji.js"></script>
 	<script src="bower_components/moment/min/moment.min.js"></script>
 
 	<script src="js/gallery-layout.js"></script>
@@ -38,7 +39,7 @@
 			<div class="modal-body">
 				<p>长按复制下方邀请码然后
 					<br>打开Us即可上传活动照片</p>
-				<div class="invitation-code">us.<%= invitationCode %></div>
+				<span class="invitation-code">us<%= invitationCode %></span>
 			</div>
 			<div class="modal-footer">
 				<a class="invitationbtn btn-block" href="javascript:;">打开Us</a>
@@ -73,7 +74,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="onloadtip-btn"><div class="onloadtip-btnarea" href="javascript:;"></div>知道了</div>
+			<div class="onloadtip-btn"><a class="onloadtip-btnarea" href="javascript:;"></a>知道了</div>
 		</div>
 	</script>
 
@@ -119,7 +120,7 @@
 		</div>
 	</div>
 	<p class="gallery-date"></p>
-	<h1 class="gallery-title"></h1>
+	<h1 class="gallery-title replace-emoji"></h1>
 	<div class="gallery-authors">
 		<div class="gallery-authors-inner"></div>
 		<span class="gallery-authors-tip"></span>
@@ -245,13 +246,13 @@
 				<div class="pswp__author__name"></div>
 			</div>
 
-<!-- 			<div class="pswp__comment">
+			<div class="pswp__comment">
 				<div class="pswp__bubblenum">0</div>
 				<div class="pswp__bubble"></div>
 				<div class="pswp__heartnum">0</div>
 				<div class="pswp__heart"></div>
 			</div>
- -->
+
 			<div class="pswp__data">
 				<div class="pswp__shoot-time"></div>
 			</div>

@@ -119,6 +119,21 @@ html {
 	color: #fff;
 }
 
+.group-name p {
+	display: inline-block;
+	margin: 0 auto;
+	height: 20px;
+	text-align: center;
+	line-height: 20px;
+	font-size: 14px;
+	font-weight: bold;
+	color: #fff;
+}
+
+.group-name p img {
+	position: static;
+}
+
 .group-count {
 	display: inline;
 	position: absolute;
@@ -206,6 +221,76 @@ html {
 	transition: all 0.5s;
 }
 
+.group-event .group-event-changebtnbox {
+	width: 100%;
+	height: 30px;
+	margin: 0 0 30px 0;
+}
+
+.group-event .group-event-changebtnbox div:nth-child(1) {
+	box-sizing: border-box;
+	width: 50%;
+	height: 30px;
+	padding-left: 10px;
+	padding-right: 5px;
+	float: left;
+}
+
+.group-event .group-event-changebtnbox div:nth-child(2) {
+	box-sizing: border-box;
+	width: 50%;
+	height: 30px;
+	padding-left: 5px;
+	padding-right: 10px;
+	float: left;
+}
+
+.group-event-changebtnbox a {
+	border-radius: 1px;
+}
+
+.group-event-changebtnbox .group-figure-listbtn {
+	position: relative;
+	left: -1px;
+	top: -1px;
+	display: block;
+	width: 100%;
+	height: 30px;
+	box-shadow: 1px 1px 5px #000;
+	font-size: 12px;
+	color: #000000;
+	text-align: center;
+	line-height: 30px;
+}
+
+.group-event-changebtnbox .group-figure-listbtn.select {
+	position: static;
+	background: #616346;
+	box-shadow: none;
+	color: #fff;
+}
+
+.group-event-changebtnbox .group-bit-listbtn {
+	position: relative;
+	left: -1px;
+	top: -1px;
+	display: block;
+	width: 100%;
+	height: 30px;
+	box-shadow: 1px 1px 5px #000;
+	font-size: 12px;
+	color: #000000;
+	text-align: center;
+	line-height: 30px;
+}
+
+.group-event-changebtnbox .group-bit-listbtn.select {
+	position: static;
+	background: #616346;
+	box-shadow: none;
+	color: #fff;
+}
+
 .group-figure-list {
 	margin: 0 0 50px 10px;
 	padding: 0;
@@ -253,6 +338,7 @@ html {
 	width: 100%;
 	height: 100%;
 	box-shadow: 2px 2px 2px #666;
+	border-radius: 1px;
 }
 
 .group-event-box .group-event-imgmask {
@@ -288,6 +374,187 @@ html {
 	line-height: 16px;
 	font-weight: bold;
 	color: #fff;
+}
+
+.group-bit-list {
+	display: none;
+	margin-bottom: 50px;
+}
+
+.group-bit-list li {
+	position: relative;
+	margin-bottom: 30px;
+}
+
+.group-bit-list .group-bit-authorsmallimg {
+	position: absolute;
+	top: 0;
+	left: 10px;
+}
+
+.group-bit-list .group-bit-head {
+	padding-left: 60px;
+	padding-right: 10px;
+	min-height: 50px;
+}
+
+.group-bit-head .group-bit-titletext {
+	line-height: 20px;
+	font-size: 12px;
+	color: #b5b5b5;
+}
+
+.group-bit-head .group-bit-titletext .group-bit-authornicname {
+	color: #000000;
+	font-weight: bold;
+}
+
+.group-bit-head .group-bit-titletext .group-bit-titletextgreen {
+	color: #91945c;
+}
+
+.group-bit-head .group-bit-time {
+	line-height: 20px;
+	font-size: 11px;
+	color: #b5b5b5;
+}
+
+.group-bit-head .group-bit-contentbox {
+	position: relative;
+	top: -3px;
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 10px;
+	font-size: 12px;
+	line-height: 20px;
+}
+
+.group-bit-head .group-bit-contentbox .group-bit-contentnum {
+	display: inline;
+	color: #91945c;
+}
+
+.group-bit-head .group-bit-contentbox .group-bit-content {
+	display: inline;
+	color: #000000;
+}
+
+.group-bit-head .group-bit-contentbtn {
+	display: inline-block;
+	line-height: 12px;
+	font-size: 12px;
+	margin-bottom: 17px;
+	color: #91945c;
+}
+
+.group-bit-list .group-bit-imgbox {
+	width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.group-bit-list .group-bit-imgbox .group-bit-imgdrawer {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	font-size: 0;
+	white-space: nowrap;
+}
+
+.group-bit-imgcandrawer span {
+	display: block;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 28px;
+	height: 14px;
+	background: -webkit-linear-gradient(left, rgba(0,0,0,1) , rgba(0,0,0,0));
+	background: linear-gradient(left, rgba(0,0,0,1) , rgba(0,0,0,0));
+	font-size: 10px;
+	line-height: 14px;
+	text-indent: 4px;
+	color: #fff;
+	opacity: 0;
+	-webkit-transition: all 0.5s;
+	transition: all 0.5s;
+}
+
+.group-bit-imgbox .group-bit-imgdrawer .group-bit-pictureimgback {
+	display: inline-block;
+	background: #f9f9f9;
+	margin-right: 5px;
+	position: relative;
+}
+
+.group-bit-imgbox  .group-bit-imgdrawer img {
+	display: block;
+}
+
+.group-bit-list .group-bit-commentlikebtn {
+	width: 100%;
+	height: 30px;
+}
+
+.group-bit-list .group-bit-likeauthorsbox {
+	padding-left: 60px;
+	padding-right: 10px;
+	padding-bottom: 12px;
+}
+
+.group-bit-likeauthorsbox .group-bit-likeauthorimg {
+	float: left;
+	margin-right: 2px;
+}
+
+.group-bit-likeauthorsbox .group-bit-likeauthorsnum {
+	display: inline-block;
+	width: 30px;
+	height: 16px;
+	padding-top: 14px;
+	float: left;
+	line-height: 16px;
+	font-size: 10px;
+	color: #ffffff;
+	text-align: center;
+	background: url("../images/pswp-heart.png") no-repeat 0 0;
+	background-color: black;
+	background-size: 12px 10px;
+	background-position: 10px 4px;
+}
+
+.group-bit-list .group-bit-commentauthorsbox {
+	margin: 0 10px 30px 60px;
+	background: #f1f1f1;
+	padding: 8px 10px;
+}
+
+.group-bit-commentauthorsbox .group-bit-onecomment {
+	display: block;
+	width: 100%;
+	font-size: 12px;
+	line-height: 16px;
+}
+
+.group-bit-commentauthorsbox .group-bit-onecomment i {
+	display: inline;
+	color: #91945c;
+}
+
+.group-bit-commentauthorsbox .group-bit-onecomment p {
+	display: inline;
+	color: #000;
+}
+
+.group-bit-list .group-bit-bottomborderline {
+	display: block;
+	width: 100%;
+	height: 1px;
+	background: -webkit-linear-gradient(left, #fff , #666 , #fff);
+	background: linear-gradient(left, #fff , #666 , #fff);
+}
+
+.group-bit-willemoji img {
+	width: 14px;
+	height: 14px;
 }
 
 #onload-gif {
@@ -451,6 +718,13 @@ html {
 	margin-bottom: 0;
 }
 
+.bigimg-body .bigimg-nameandsex p img {
+	display: inline-block;
+	vertical-align: text-bottom;
+	width: 14px;
+	height: 14px;
+}
+
 .bigimg-body span{
 	width: 250px;
 	height: 1px;
@@ -473,6 +747,13 @@ html {
 	line-height: 30px;
 	color: #fff;
 	margin-bottom: 0;
+}
+
+.bigimg-body .bigimg-commonevent p img {
+	display: inline-block;
+	vertical-align: text-bottom;
+	width: 14px;
+	height: 14px;
 }
 
 .back-drop {
@@ -717,10 +998,6 @@ html {
 	opacity: 0;
 	-webkit-transform: scale3d(0, 0, 1);
 	transform: scale3d(0, 0, 1);
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
 .invitecode-box.show {
@@ -765,6 +1042,11 @@ html {
 	font-size: 13px;
 	font-weight: normal;
 	color: #000;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
 }
 
 .invitecode-box .invitecode-top-box p i {
@@ -786,10 +1068,6 @@ html {
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
-	-webkit-user-select: text;
-	-moz-user-select: text;
-	-ms-user-select: text;
-	user-select: text;
 }
 
 .invitecode-box .invitecode-btn {
@@ -885,4 +1163,11 @@ html {
 	border-radius: 5px;
 	text-align: center;
 	background: #fff;
+}
+
+.replace-emoji img {
+	display: inline-block;
+	vertical-align: text-bottom;
+	width: 16px;
+	height: 16px;
 }

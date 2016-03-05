@@ -15,7 +15,9 @@
 	<link rel="stylesheet" href="css/group.css">
 	<script src="bower_components/jquery_lazyload/jquery.lazyload.js"></script>
 	<script src="js/jquery.cookie.js"></script>
-	<script src="js/group.js?2016010401"></script>
+	<script src="js/jquery.emoji.js"></script>
+	<script src="bower_components/moment/min/moment.min.js"></script>
+	<script src="js/group.js?2016030501"></script>
 </head>
 <body>
 	<!--封面图-->
@@ -23,7 +25,9 @@
 		<div class="group-cover-tent"></div>
 		<div class="group-cover-content">
 			<img alt src="" width="100%" height="100%">
-			<div class="group-name"></div>
+			<div class="group-name">
+				<p class="replace-emoji"></p>
+			</div>
 			<div class="group-count clearfix">
 				<div>故事</div>
 				<div>0</div>
@@ -59,8 +63,12 @@
 
 	<!--故事列表-->
 	<div class="group-event">
-		<ul class="group-figure-list">
-		</ul>
+		<!--<div class="group-event-changebtnbox clearfix">-->
+			<!--<div class="group-figure-listdiv"><a href="javascript:;" class="group-figure-listbtn select">故事</a></div>-->
+			<!--<div class="group-bit-listdiv"><a href="javascript:;" class="group-bit-listbtn">点滴</a></div>-->
+		<!--</div>-->
+		<ul class="group-figure-list"></ul>
+		<!--<ul class="group-bit-list"></ul>-->
 	</div>
 
 	<!--登入弹窗-->
@@ -68,7 +76,7 @@
 		<div class="onloadtip-cover-box">
 			<img alt src width="100%">
 			<div>
-				<p>你已加入Us小组‘<i></i>’，大家在这里记录了<i>0</i>个故事<i>0</i>个瞬间；“使用Us打开”可以随时随地查看、续写小组里的故事</p>
+				<p>你已加入Us小组‘<i class="replace-emoji"></i>’，大家在这里记录了<i>0</i>个故事<i>0</i>个瞬间；“使用Us打开”可以随时随地查看、续写小组里的故事</p>
 			</div>
 		</div>
 		<div class="onloadtip-authorslist-box">
@@ -82,8 +90,8 @@
 		<div class="flex-onloadtip-cover-box">
 			<img alt src width="100%">
 			<div>
-				<p class="flex-onloadtip-text1">你已加入Us小组「<i></i>」<br>大家在这里记录了<i>0</i>个故事<i>0</i>个瞬间<br>使用Us打开可以随时随地查看、续写小组里的故事</p>
-				<p class="flex-onloadtip-text2">Us小组「<i></i>」记录了大家在一起的<i>0</i>个故事<i>0</i>个瞬间<br>加入小组即可随时随地查看、续写小组里的故事</p>
+				<p class="flex-onloadtip-text1">你已加入Us小组「<i class="replace-emoji"></i>」<br>大家在这里记录了<i>0</i>个故事<i>0</i>个瞬间<br>使用Us打开可以随时随地查看、续写小组里的故事</p>
+				<p class="flex-onloadtip-text2">Us小组「<i class="replace-emoji"></i>」记录了大家在一起的<i>0</i>个故事<i>0</i>个瞬间<br>加入小组即可随时随地查看、续写小组里的故事</p>
 			</div>
 		</div>
 		<div class="flex-onloadtip-authorslist-box">

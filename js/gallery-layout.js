@@ -274,6 +274,7 @@ function activeLockTip() {
 	var $templateToolbarLockTipNicname = $(templateToolbarLockTipNicname);
 	var $modalBackdrop = $('<div class="modal-backdrop"></div>');
 	$templateToolbarLockTipNicname.addClass('show').appendTo('body');
+	$('.locktip-body').find('span').emoji();
 	$('.locktipbtn').on('click', function (e) {
 		e.preventDefault();
 		$('body').unbind('touchmove');
@@ -895,9 +896,13 @@ function showAuthorImg(src,name,sex,uid) {
 					var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 					var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 					$templateAuthorBigImgs.find('.bigimg-src img').attr('src', src);
-					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname + ' , ' + authorSex);
+					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname + ' , ' + authorSex).emoji();
 					// $templateAuthorBigImgs.find('.bigimg-nameandsex p').html(d.p.user.nickname);
-					$templateAuthorBigImgs.find('.bigimg-commonevent p').html(d.p.event.content);
+					if(!("event" in d.p)) {
+						$templateAuthorBigImgs.find('.bigimg-commonevent p').html('').emoji();
+					}else {
+						$templateAuthorBigImgs.find('.bigimg-commonevent p').html(d.p.event.content).emoji();
+					}
 					$templateAuthorBigImgs.addClass('show').appendTo('body');
 					$modalBackdrop.on('touchstart mousedown', function (e) {
 						e.preventDefault();
@@ -924,7 +929,7 @@ function showAuthorImg(src,name,sex,uid) {
 					var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 					var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 					$templateAuthorBigImgs.find('.bigimg-src img').attr('src',src);
-					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
+					$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex).emoji();
 					// $templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name);
 					$templateAuthorBigImgs.addClass('show').appendTo('body');
 					$modalBackdrop.on('touchstart mousedown', function (e) {
@@ -958,7 +963,7 @@ function showAuthorImg(src,name,sex,uid) {
 		var $templateAuthorBigImgs = $(templateAuthorBigImgs);
 		var $modalBackdrop = $('<div class="bigimg-backdrop"></div>');
 		$templateAuthorBigImgs.find('.bigimg-src img').attr('src',src);
-		$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex);
+		$templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name + ' , ' + authorSex).emoji();
 		// $templateAuthorBigImgs.find('.bigimg-nameandsex p').html(name);
 		$templateAuthorBigImgs.addClass('show').appendTo('body');
 		$modalBackdrop.on('touchstart mousedown', function (e) {
@@ -1153,15 +1158,23 @@ function getGallery() {
 						var photoGroupFooterAppear = 'block';
 					}
 
-					$('.photo-group-container').append("<div class='photo-group'><div class='photo-item' data-description='" + currentPicture.content + "' data-author='" + currentPicture.nickname + "' data-avatar='" + trueAvatarImgUrl + "' data-shoot-time='" + currentPicture.shoot_time + "' data-likecount='" + currentPicture.like_count + "' data-commentcount='" + currentPicture.comment_count + "' style='margin-top: " + p_warePer*100 + "%'><div class='photo-item-box'><img alt='' data-original='" + trueImgUrl + "' width='100%'><a class='photo-item-wrapper' href='" + p_trueImgUrl + "' data-size='" + currentPicture.size + "' ></a></div></div><div class='photo-group-footer' style='display: " + photoGroupFooterAppear + "'><p class='photocontent-inline'>" + photoContent + "</p></div></div>");
+					var shootTime = currentPicture.shoot_time;
+					if(shootTime == ''){
+						shootTime = 0;
+					}
+
+					$('.photo-group-container').append("<div class='photo-group'><div class='photo-item' data-description='" + currentPicture.content + "' data-author='" + currentPicture.nickname + "' data-avatar='" + trueAvatarImgUrl + "' data-shoot-time='" + shootTime + "' data-likecount='" + currentPicture.like_count + "' data-commentcount='" + currentPicture.comment_count + "' style='margin-top: " + p_warePer*100 + "%'><div class='photo-item-box'><a class='photo-item-wrapper' href='" + p_trueImgUrl + "' data-size='" + currentPicture.size + "'><img alt='' data-original='" + trueImgUrl + "' width='100%'></a></div></div><div class='photo-group-footer' style='display: " + photoGroupFooterAppear + "'><p class='photocontent-inline replace-emoji'>" + photoContent + "</p></div></div>");
 				}
 
+				//描述最多显示三行功能
 				//$('.photocontent-inline').each(function(i){
 				//	if ($(this).height() > 54) {
 				//		$(this).addClass('photocontent-box').removeClass('photocontent-inline');
 				//	}
 				//});
-
+				$('.replace-emoji').each(function(i, d){
+					$(d).emoji();
+				});
 
 
 
@@ -1311,6 +1324,10 @@ function getUrlConfig() {
 $(function () {
 
 	getUrlConfig();
+
+	$('#onload-gif').on('touchstart', function (e) {
+		e.preventDefault();
+	});
 
 	 //微信下邀请 的 打开us （已换微下载）
 	 $('.toolbar-upload .open-app').on('click', function (e) {
