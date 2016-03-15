@@ -2,7 +2,7 @@
 
 var apiUrl = location.protocol + '//' + location.host + '/Us/system/getDomainInfo';
 var urlProtocol = location.protocol + '//';
-var pokoConsole = true;
+var pokoConsole = false;
 
 var urlConfig = {};		//url信息
 var memberList = [];	//成员列表
