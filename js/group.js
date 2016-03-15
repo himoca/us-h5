@@ -507,154 +507,157 @@ function showBitList() {
 					console.log(d);
 				}
 
-				for (var i=0; i< d.p.list.length; i++) {
-					var listindex = i;
-					var bitlist = d.p.list[i];
+				if(d.p.list.length == 0) {
 
-					var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
-					var photoFile = bitlist.avatar;
-					var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
-					var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
-					var width = getRetinaImgSize(40);
-					var height = width;
-					var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
+				}else {
+					for (var i=0; i< d.p.list.length; i++) {
+						var listindex = i;
+						var bitlist = d.p.list[i];
 
-					//创建每个点滴
-					$('.group-bit-list').append(
-						'<li>' +
-							'<img class="group-bit-authorsmallimg" src="'+trueImgUrl+'" alt="" width="40" height="40">' +
-							'<div class="group-bit-head">' +
-								'<p class="group-bit-titletext"><i class="group-bit-authornicname group-bit-willemoji">'+bitlist.nickname+'</i> 在点滴中上传了<i class="group-bit-titletextgreen">'+bitlist.picture.length+'张</i>照片</p>' +
-								'<p class="group-bit-time">'+bitlistCreateTime(bitlist.create_time)+'</p>' +
-								'<div class="group-bit-contentbox group-bit-willemoji"></div>' +
-								'<a class="group-bit-contentbtn" href="javascript:;">更多</a>' +
-							'</div>' +
-							'<div class="group-bit-imgbox"><div class="group-bit-imgdrawer clearfix"></div></div>' +
-							'<div class="group-bit-commentlikebtn"></div>' +
-							'<div class="group-bit-likeauthorsbox clearfix"></div>' +
-							'<div class="group-bit-commentauthorsbox group-bit-willemoji"></div>' +
-							'<span class="group-bit-bottomborderline"></span>' +
-						'</li>'
-					);
-
-					//添加照片描述
-					var bitlistContentall = '';
-					for (var j=0; j< bitlist.picture.length; j++) {
-						var bitlistContent = bitlist.picture[j].content;
-						bitlistContentall = bitlistContentall+bitlistContent;
-						if(bitlistContent !== '' && bitlist.picture.length !== 1) {
-							$('.group-bit-contentbox').eq(listindex).append('<i class="group-bit-contentnum">'+(j+1)+'.</i><p class="group-bit-content">'+bitlistContent+' </p>');
-						}else if(bitlistContent !== '' && bitlist.picture.length == 1) {
-							$('.group-bit-contentbox').eq(listindex).append('<p class="group-bit-content">'+bitlistContent+'</p>');
-						}
-					}
-					if(bitlistContentall == ''){
-						$('.group-bit-contentbox').eq(listindex).css('display','none');
-						$('.group-bit-contentbtn').eq(listindex).css('display','none');
-					}
-
-					//添加照片
-					var bitlistPictureLength = bitlist.picture.length;
-					if(bitlistPictureLength == 1) {			//单张
 						var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
-						var photoFile = bitlist.picture[0].url;
+						var photoFile = bitlist.avatar;
 						var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
 						var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
-						var sizeInterceptPosition = bitlist.picture[0].size.indexOf('x');
-						var wareWidth = parseInt(bitlist.picture[0].size.substring(0,sizeInterceptPosition));  //图片真实宽
-						var wareHeight = parseInt(bitlist.picture[0].size.substring(sizeInterceptPosition+1));  //图片真实高
-						if(wareHeight > wareWidth) {
-							var height = getRetinaImgSize(120);
-							var width = parseInt(height*(wareWidth/wareHeight));
-						}else {
-							var height = getRetinaImgSize(100);
-							var width = parseInt(height*(wareWidth/wareHeight));
-						}
+						var width = getRetinaImgSize(40);
+						var height = width;
 						var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
-							$('.group-bit-imgdrawer').eq(listindex).append('<div class="group-bit-pictureimgback" style="width: '+width+'px; height: '+height+'px;"><img class="group-bit-pictureimg" data-original="' + trueImgUrl + '" alt=""></div>').css('padding', '0 10px 0 60px');
-					}else {				//多张
-						for (var j=0; j<bitlist.picture.length; j++) {
-							var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
-							var photoFile = bitlist.picture[j].url;
-							var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
-							var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
-							var sizeInterceptPosition = bitlist.picture[j].size.indexOf('x');
-							var wareWidth = parseInt(bitlist.picture[j].size.substring(0,sizeInterceptPosition));  //图片真实宽
-							var wareHeight = parseInt(bitlist.picture[j].size.substring(sizeInterceptPosition+1));  //图片真实高
-							var height = getRetinaImgSize(120);
-							var width = getRetinaImgSize(140);
-							var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
-							if(window.devicePixelRatio >= 2) {
-								var cssHeight = height/2;
-								var cssWidth = width/2;
-								$('.group-bit-imgdrawer').eq(listindex).addClass('group-bit-imgcandrawer').append('<div class="group-bit-pictureimgback" style="width: '+cssWidth+'px; height: '+cssHeight+'px;"><img class="group-bit-pictureimg" data-original="'+trueImgUrl+'" alt="" width="'+cssWidth+'" height="'+cssHeight+'"><span>'+(j+1)+'</span></div>')
-							}else {
-								$('.group-bit-imgdrawer').eq(listindex).addClass('group-bit-imgcandrawer').append('<div class="group-bit-pictureimgback" style="width: '+width+'px; height: '+height+'px;"><img class="group-bit-pictureimg" data-original="'+trueImgUrl+'" alt="" width="'+width+'" height="'+height+'"><span>'+(j+1)+'</span></div>')
+
+						//创建每个点滴
+						$('.group-bit-list').append(
+							'<li>' +
+								'<img class="group-bit-authorsmallimg" src="'+trueImgUrl+'" alt="" width="40" height="40">' +
+								'<div class="group-bit-head">' +
+									'<p class="group-bit-titletext"><i class="group-bit-authornicname group-bit-willemoji">'+bitlist.nickname+'</i> 在点滴中上传了<i class="group-bit-titletextgreen">'+bitlist.picture.length+'张</i>照片</p>' +
+									'<p class="group-bit-time">'+bitlistCreateTime(bitlist.create_time)+'</p>' +
+									'<div class="group-bit-contentbox group-bit-willemoji"></div>' +
+									'<a class="group-bit-contentbtn" href="javascript:;">更多</a>' +
+								'</div>' +
+								'<div class="group-bit-imgbox"><div class="group-bit-imgdrawer clearfix"></div></div>' +
+								'<div class="group-bit-commentlikebtn"></div>' +
+								'<div class="group-bit-likeauthorsbox clearfix"></div>' +
+								'<div class="group-bit-commentauthorsbox group-bit-willemoji"></div>' +
+								'<span class="group-bit-bottomborderline"></span>' +
+							'</li>'
+						);
+
+						//添加照片描述
+						var bitlistContentall = '';
+						for (var j=0; j< bitlist.picture.length; j++) {
+							var bitlistContent = bitlist.picture[j].content;
+							bitlistContentall = bitlistContentall+bitlistContent;
+							if(bitlistContent !== '' && bitlist.picture.length !== 1) {
+								$('.group-bit-contentbox').eq(listindex).append('<i class="group-bit-contentnum">'+(j+1)+'.</i><p class="group-bit-content">'+bitlistContent+' </p>');
+							}else if(bitlistContent !== '' && bitlist.picture.length == 1) {
+								$('.group-bit-contentbox').eq(listindex).append('<p class="group-bit-content">'+bitlistContent+'</p>');
 							}
 						}
-					}
+						if(bitlistContentall == ''){
+							$('.group-bit-contentbox').eq(listindex).css('display','none');
+							$('.group-bit-contentbtn').eq(listindex).css('display','none');
+						}
 
-
-					//添加点赞头像和数量
-					if(bitlist.like_count !== 0) {
-						for(var j=0; j< bitlist.like.length; j++) {
-							var bitlistlikepropertiesuid = bitlist.like[j].properties.uid;
+						//添加照片
+						var bitlistPictureLength = bitlist.picture.length;
+						if(bitlistPictureLength == 1) {			//单张
 							var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
-							var photoFile = d.p.properties[bitlistlikepropertiesuid].avatar;
+							var photoFile = bitlist.picture[0].url;
 							var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
 							var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
-							var width = getRetinaImgSize(30);
-							var height = width;
-							var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
-							$('.group-bit-likeauthorsbox').eq(listindex).append('<img class="group-bit-likeauthorimg" src="'+trueImgUrl+'" alt="" width="30" height="30">')
-						}
-						$('.group-bit-likeauthorsbox').eq(listindex).append('<span class="group-bit-likeauthorsnum">'+bitlist.like_count+'</span>');
-					}else {
-						$('.group-bit-likeauthorsbox').eq(listindex).css('display','none');
-					}
-
-					//添加评论
-					if(bitlist.comment_count !== 0) {
-						for(var j=0; j<bitlist.comment.length; j++) {
-							if(!("to" in bitlist.comment[j].properties)){
-								var commentpropertiesuid = bitlist.comment[j].properties.uid;
-								var commentnickname = d.p.properties[commentpropertiesuid].nickname;
-								$('.group-bit-commentauthorsbox').eq(listindex).append('<span class="group-bit-onecomment"><i class="group-bit-respondents">'+commentnickname+'</i><p class="group-bit-commenttext">: '+bitlist.comment[j].properties.content+'</p></span>')
+							var sizeInterceptPosition = bitlist.picture[0].size.indexOf('x');
+							var wareWidth = parseInt(bitlist.picture[0].size.substring(0,sizeInterceptPosition));  //图片真实宽
+							var wareHeight = parseInt(bitlist.picture[0].size.substring(sizeInterceptPosition+1));  //图片真实高
+							if(wareHeight > wareWidth) {
+								var height = getRetinaImgSize(120);
+								var width = parseInt(height*(wareWidth/wareHeight));
 							}else {
-								var commentpropertiesuid = bitlist.comment[j].properties.uid;
-								var commentedpropertiesuid = bitlist.comment[j].properties.to;
-								var commentnickname = d.p.properties[commentpropertiesuid].nickname;
-								var commentednickname = d.p.properties[commentedpropertiesuid].nickname;
-								$('.group-bit-commentauthorsbox').eq(listindex).append('<span class="group-bit-onecomment"><i class="group-bit-respondents">'+commentnickname+'</i><p class="group-bit-huifu"> 回复 </p><i class="group-bit-selecter">'+commentednickname+'</i><p class="group-bit-commenttext">: '+bitlist.comment[j].properties.content+'</p></span>');
+								var height = getRetinaImgSize(100);
+								var width = parseInt(height*(wareWidth/wareHeight));
+							}
+							var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
+								$('.group-bit-imgdrawer').eq(listindex).append('<div class="group-bit-pictureimgback" style="width: '+width+'px; height: '+height+'px;"><img class="group-bit-pictureimg" data-original="' + trueImgUrl + '" alt=""></div>').css('padding', '0 10px 0 60px');
+						}else {				//多张
+							for (var j=0; j<bitlist.picture.length; j++) {
+								var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
+								var photoFile = bitlist.picture[j].url;
+								var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
+								var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
+								var sizeInterceptPosition = bitlist.picture[j].size.indexOf('x');
+								var wareWidth = parseInt(bitlist.picture[j].size.substring(0,sizeInterceptPosition));  //图片真实宽
+								var wareHeight = parseInt(bitlist.picture[j].size.substring(sizeInterceptPosition+1));  //图片真实高
+								var height = getRetinaImgSize(120);
+								var width = getRetinaImgSize(140);
+								var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
+								if(window.devicePixelRatio >= 2) {
+									var cssHeight = height/2;
+									var cssWidth = width/2;
+									$('.group-bit-imgdrawer').eq(listindex).addClass('group-bit-imgcandrawer').append('<div class="group-bit-pictureimgback" style="width: '+cssWidth+'px; height: '+cssHeight+'px;"><img class="group-bit-pictureimg" data-original="'+trueImgUrl+'" alt="" width="'+cssWidth+'" height="'+cssHeight+'"><span>'+(j+1)+'</span></div>')
+								}else {
+									$('.group-bit-imgdrawer').eq(listindex).addClass('group-bit-imgcandrawer').append('<div class="group-bit-pictureimgback" style="width: '+width+'px; height: '+height+'px;"><img class="group-bit-pictureimg" data-original="'+trueImgUrl+'" alt="" width="'+width+'" height="'+height+'"><span>'+(j+1)+'</span></div>')
+								}
 							}
 						}
-					}else {
-						$('.group-bit-commentauthorsbox').eq(listindex).css('display','none');
-					}
 
+
+						//添加点赞头像和数量
+						if(bitlist.like_count !== 0) {
+							for(var j=0; j< bitlist.like.length; j++) {
+								var bitlistlikepropertiesuid = bitlist.like[j].properties.uid;
+								var pictureBaseUrl = urlProtocol + urlConfig.download_domain + '/';
+								var photoFile = d.p.properties[bitlistlikepropertiesuid].avatar;
+								var photoFileDirAndName = photoFile.match(/(.*)\.(.*$)/)[1];
+								var photoFileExt = photoFile.match(/(.*)\.(.*$)/)[2];
+								var width = getRetinaImgSize(30);
+								var height = width;
+								var trueImgUrl = pictureBaseUrl + photoFileDirAndName + '_' + width + 'x' + height + '.' + photoFileExt;
+								$('.group-bit-likeauthorsbox').eq(listindex).append('<img class="group-bit-likeauthorimg" src="'+trueImgUrl+'" alt="" width="30" height="30">')
+							}
+							$('.group-bit-likeauthorsbox').eq(listindex).append('<span class="group-bit-likeauthorsnum">'+bitlist.like_count+'</span>');
+						}else {
+							$('.group-bit-likeauthorsbox').eq(listindex).css('display','none');
+						}
+
+						//添加评论
+						if(bitlist.comment_count !== 0) {
+							for(var j=0; j<bitlist.comment.length; j++) {
+								if(!("to" in bitlist.comment[j].properties)){
+									var commentpropertiesuid = bitlist.comment[j].properties.uid;
+									var commentnickname = d.p.properties[commentpropertiesuid].nickname;
+									$('.group-bit-commentauthorsbox').eq(listindex).append('<span class="group-bit-onecomment"><i class="group-bit-respondents">'+commentnickname+'</i><p class="group-bit-commenttext">: '+bitlist.comment[j].properties.content+'</p></span>')
+								}else {
+									var commentpropertiesuid = bitlist.comment[j].properties.uid;
+									var commentedpropertiesuid = bitlist.comment[j].properties.to;
+									var commentnickname = d.p.properties[commentpropertiesuid].nickname;
+									var commentednickname = d.p.properties[commentedpropertiesuid].nickname;
+									$('.group-bit-commentauthorsbox').eq(listindex).append('<span class="group-bit-onecomment"><i class="group-bit-respondents">'+commentnickname+'</i><p class="group-bit-huifu"> 回复 </p><i class="group-bit-selecter">'+commentednickname+'</i><p class="group-bit-commenttext">: '+bitlist.comment[j].properties.content+'</p></span>');
+								}
+							}
+						}else {
+							$('.group-bit-commentauthorsbox').eq(listindex).css('display','none');
+						}
+
+					}
+					//描述多余三行时收起
+					$('.group-bit-contentbox').each(function(index){
+						if($(this).height() > 60) {
+							$(this).css('height','60px');
+						}else {
+							$('.group-bit-contentbtn').eq(index).css('display','none');
+						}
+					});
+					//描述更多/收起切换
+					$('.group-bit-contentbtn').on('click',function(e){
+						e.preventDefault();
+						if($(this).html() == '更多'){
+							$(this).html('收起').prev().css('height','auto');
+						}else if($(this).html() == '收起'){
+							$(this).html('更多').prev().css('height','60px');
+						}
+					});
+					//转换emoji表情
+					$('.group-bit-willemoji').each(function(){
+						$(this).emoji();
+					});
 				}
-				//描述多余三行时收起
-				$('.group-bit-contentbox').each(function(index){
-					if($(this).height() > 60) {
-						$(this).css('height','60px');
-					}else {
-						$('.group-bit-contentbtn').eq(index).css('display','none');
-					}
-				});
-				//描述更多/收起切换
-				$('.group-bit-contentbtn').on('click',function(e){
-					e.preventDefault();
-					if($(this).html() == '更多'){
-						$(this).html('收起').prev().css('height','auto');
-					}else if($(this).html() == '收起'){
-						$(this).html('更多').prev().css('height','60px');
-					}
-				});
-				//转换emoji表情
-				$('.group-bit-willemoji').each(function(){
-					$(this).emoji();
-				});
-
 
 				$("img").lazyload({
 					threshold: 100,
